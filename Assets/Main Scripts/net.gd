@@ -177,6 +177,7 @@ func get_button_state(id: StringName) -> Variant:
 func _update_button(id: StringName, data) -> void:
 	get_button_state(id).merge(data, true)
 	if id in buttons:
+		print(id, data)
 		get_node(buttons[id]).button_update(data)
 
 func client_update_button(id: StringName, data) -> void:
@@ -323,8 +324,10 @@ func _process_connected_receive(id: int, data: String):
 				_update_alarm(alarm, info)
 		ServerPackets.BUTTON_PARAMETERS_UPDATE:
 			var updated_buttons = JSON.parse_string(data)
+			print(updated_buttons)
 			for button in updated_buttons:
 				if button in _client_updated_buttons:
+					print("ignored " + button)
 					continue
 				var info = updated_buttons[button]
 				_update_button(button, info)
@@ -337,6 +340,13 @@ func _process_connected_send():
 		for message in queued_chat_messages:
 			_send_packet(ClientPackets.CHAT, message)
 		queued_chat_messages.clear()
+	
+	if not _client_updated_buttons.is_empty():
+		_send_packet(ClientPackets.BUTTON_PARAMETERS_UPDATE, JSON.stringify(_client_updated_buttons))
+		_client_updated_buttons.clear()
+	if not _client_updated_switches.is_empty():
+		_send_packet(ClientPackets.SWITCH_PARAMETERS_UPDATE, JSON.stringify(_client_updated_switches))
+		_client_updated_switches.clear()
 	pass
 
 func _process_connected(delta):
@@ -397,3 +407,6 @@ func _ready():
 	disconnected.connect(_on_ready)
 	_on_ready()
 	pass
+
+func _init():
+	socket.inbound_buffer_size = 1_048_576 # = 2^20

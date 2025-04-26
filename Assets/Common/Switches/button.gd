@@ -1,39 +1,53 @@
 extends CSGBox3D
 
-@onready var node_3d = $"/root/Node3D"
-@onready var player = $"/root/Node3D/Player"
-var button 
+@export var id: StringName
 
-func init():
-	button = node_3d.buttons[self.name]
-	button.switch = self
-	button.local_push = false
+@onready var player = $"/root/Node3D/Player"
+var button_state: bool
+var button_armed: bool
+var button_local_push: bool
 
 func _ready():
-	node_3d.init_scene_objects.connect(init)
+	if id == &"":
+		return
+	Network.register_button(id, get_path())
 	player.unclick_left.connect(un_click)
 	if get_node_or_null("StaticBody3D") != null:
 		$"StaticBody3D".input_event.connect(switch_click)
 	elif get_node_or_null("Press") != null:
 		$"Press".input_event.connect(switch_click)
 	
-func button_state_change(state: bool):
-	button.state = state
+func button_state_change(state: bool, update_server: bool = true):
+	button_state = state
+	if update_server:
+		_client_button_update()
 	# TODO: button audio
 	
-func button_arm_change(armed: bool):
-	button.armed = armed
+func button_arm_change(armed: bool, update_server: bool = true):
+	button_armed = armed
+	if update_server:
+		_client_button_update()
+
+func _client_button_update():
+	var info = {
+		state = button_state,
+		armed = button_armed,
+	}
+	
+	Network.client_update_button(id, info)
+
+func button_update(info):
+	if "state" in info:
+		button_state_change(info["state"], false)
+	if "armed" in info:
+		button_arm_change(info["armed"], false)
 
 func un_click():
-	var button = node_3d.buttons[self.name]
-	if button.local_push == true:
+	if button_local_push == true:
 		button_state_change(false)
-		button.updated = true
 
 func switch_click(_camera, event, _position, _normal, _shape_idx):
 	var mouse_click = event as InputEventMouseButton
 	if mouse_click and mouse_click.button_index == 1:
-		var button = node_3d.buttons[self.name]
-		button.local_push = mouse_click.pressed
+		button_local_push = mouse_click.pressed
 		button_state_change(mouse_click.pressed)
-		button.updated = true

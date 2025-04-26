@@ -8,7 +8,6 @@ enum SwitchFlag {
 	RED,
 }
 
-@onready var node_3d = $"/root/Node3D"
 @onready var player = $"/root/Node3D/Player"
 var switch_position: int
 var switch_positions: Dictionary
