@@ -10,4 +10,4 @@ func _ready():
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(_delta):
-	self.text = str("FPS: " + str(int(Engine.get_frames_per_second())) + "\nFull: " + str(node3d.connection_ready))
+	self.text = str("FPS: " + str(int(Engine.get_frames_per_second())) + "\nFull: " + str(Network.current_state == Network.State.CONNECTED))

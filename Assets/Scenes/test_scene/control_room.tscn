@@ -78,7 +78,8 @@ omni_range = 14.003
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.59784, -3.51043)
 
 [node name="test_switch2" parent="." instance=ExtResource("6_ngchh")]
-transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 1.39593, -3.36214)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 1.39593, -3.36214)
+id = "test_switch2"
 
 [node name="selector_switch" parent="test_switch2" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
@@ -92,6 +93,7 @@ material_override = null
 
 [node name="test_switch" parent="." instance=ExtResource("7_ca6tt")]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 1.33125, -3.36239)
+id = "test_switch"
 
 [node name="indicator" type="CSGBox3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.36062, 0.920411, 0)
@@ -134,4 +136,6 @@ shape = SubResource("BoxShape3D_giu2e")
 
 [editable path="test_switch2"]
 [editable path="test_switch2/selector_switch"]
+[editable path="test_switch"]
+[editable path="test_switch/selector_switch"]
 [editable path="Box1"]

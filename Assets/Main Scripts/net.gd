@@ -1,9 +1,15 @@
 extends Node
 
+func _dprint(what):
+	if Engine.get_physics_frames() % 60 == 0:
+		print(what)
+
 signal connecting()
 signal begin_login()
 signal connected()
 signal disconnected()
+
+signal chat_message(message: String)
 
 enum State {
 	READY,
@@ -47,6 +53,10 @@ var disconnect_code: int = 0
 var username: String = "cl0"
 var version: String = "alpha2025223"
 
+var player: Node3D
+
+var queued_chat_messages: Array[String] = ["test"]
+
 # keys are stringnames, values are NodePaths that can handle 'gauge events'
 var gauges: Dictionary = {}
 
@@ -65,7 +75,7 @@ func get_gauge_state(id: StringName) -> Variant:
 	return gauge_last_update.get_or_add(id, {})
 
 func _update_gauge(id: StringName, data) -> void:
-	get_gauge_state(id).merge(data, true)
+	gauge_last_update[id] = data
 	if id in gauges:
 		get_node(gauges[id]).gauge_update(data)
 
@@ -179,6 +189,10 @@ func _build_packet(id: int, data: String):
 	# why do we base64 data if data is always JSON?
 	return "%d|%s" % [id, Marshalls.utf8_to_base64(data)]
 
+func _send_packet(id: int, data: String):
+	var packet = _build_packet(id, data)
+	socket.send_text(packet)
+
 var current_state: State = State.READY
 
 var downloads_complete: Dictionary = {
@@ -192,7 +206,7 @@ var downloads_complete: Dictionary = {
 var socket: WebSocketPeer = WebSocketPeer.new()
 
 func connect_async(url):
-	socket.connect_to_url(url)
+	print(socket.connect_to_url(url))
 	current_state = State.CONNECTING
 	connecting.emit()
 
@@ -203,12 +217,34 @@ func net_disconnect(reason: String, code: int = 1000):
 func _process_connecting(delta):
 	socket.poll()
 	var socket_state = socket.get_ready_state()
+	_dprint(socket_state)
 	match socket_state:
 		WebSocketPeer.STATE_OPEN:
 			current_state = State.LOGIN
 			begin_login.emit()
 		WebSocketPeer.STATE_CLOSED:
 			net_disconnect("socket closed while connecting")
+
+func _send_player_info():
+	if player:
+		var pos = player.position
+		var rot = player.rotation
+		var info = {
+			username: {
+				position = {
+					x = pos.x,
+					y = pos.y,
+					z = pos.z,
+				},
+				rotation = {
+					x = rot.x,
+					y = rot.y,
+					z = rot.z,
+				}
+			}
+		}
+		var data = JSON.stringify(info)
+		_send_packet(ClientPackets.PLAYER_POSITION_PARAMETERS_UPDATE, data)
 
 func _process_login(delta):
 	socket.poll()
@@ -219,13 +255,13 @@ func _process_login(delta):
 				var packet = socket.get_packet().get_string_from_utf8().split("|")
 				var packet_id = int(packet[0])
 				var packet_data = Marshalls.base64_to_utf8(packet[1])
-
+				print(packet_id)
 				match packet_id:
 					ServerPackets.DOWNLOAD_DATA:
 						packet_data = packet_data.split("|")
 						var info = JSON.parse_string(packet_data[0])
 						var info_name = JSON.parse_string(packet_data[1])
-
+						print(info_name)
 						downloads_complete[info_name] = true
 
 						match info_name:
@@ -255,6 +291,7 @@ func _process_login(delta):
 							connected.emit()
 						else:
 							net_disconnect(packet_data)
+			_send_player_info()
 		WebSocketPeer.STATE_CLOSED:
 			net_disconnect("socket closed during login")
 
@@ -291,8 +328,15 @@ func _process_connected_receive(id: int, data: String):
 					continue
 				var info = updated_buttons[button]
 				_update_button(button, info)
+		ServerPackets.CHAT:
+			chat_message.emit(data)
 
 func _process_connected_send():
+	_send_player_info()
+	if queued_chat_messages.size() > 0:
+		for message in queued_chat_messages:
+			_send_packet(ClientPackets.CHAT, message)
+		queued_chat_messages.clear()
 	pass
 
 func _process_connected(delta):
@@ -326,8 +370,8 @@ func _on_login():
 		}
 
 	var data = JSON.stringify(login_parameters)
-	var packet = _build_packet(ClientPackets.USER_LOGIN, data)
-	socket.send_text(packet)
+	_send_packet(ClientPackets.USER_LOGIN, data)
+	
 	pass
 
 func _on_connecting():
@@ -335,10 +379,21 @@ func _on_connecting():
 	pass
 
 func _process(delta):
+	_dprint("")
+	_dprint(current_state)
 	match current_state:
 		State.CONNECTING:
 			_process_connecting(delta)
 		State.LOGIN:
 			_process_login(delta)
+		State.CONNECTED:
+			_process_connected(delta)
 		State.DISCONNECTING:
 			_process_disconnecting(delta)
+
+func _ready():
+	connecting.connect(_on_connecting)
+	begin_login.connect(_on_login)
+	disconnected.connect(_on_ready)
+	_on_ready()
+	pass

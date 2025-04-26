@@ -19,6 +19,7 @@ var os_is_mobile = false
 var gravity = ProjectSettings.get_setting("physics/3d/default_gravity")
 	
 func _ready():
+	Network.player = self
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	if OS.get_name() in ["Android"]:
 		os_is_mobile = true

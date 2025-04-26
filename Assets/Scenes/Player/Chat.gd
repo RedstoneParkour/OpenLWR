@@ -3,7 +3,7 @@ extends VBoxContainer
 const MAX_CHAT_MESSAGES = 200
 
 func _ready():
-	$/root/Node3D.connect(&"chat_message", _on_chat_message)
+	Network.chat_message.connect(_on_chat_message)
 	pass
 
 func _input(event):
@@ -38,7 +38,7 @@ func _on_mouse_enter_or_leave(entered: bool):
 	pass
 
 func _on_text_edit_text_submitted(text):
-	$/root/Node3D.sent_messages.append(text)
+	Network.queued_chat_messages.append(text)
 	$Edit.clear()
 	$Edit.release_focus()
 	pass # Replace with function body.
