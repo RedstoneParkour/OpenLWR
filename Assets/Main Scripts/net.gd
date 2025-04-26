@@ -69,12 +69,60 @@ func _update_gauge(id: StringName, data) -> void:
 	if id in gauges:
 		get_node(gauges[id]).gauge_update(data)
 
+
+# keys are stringnames, values are NodePaths that can handle 'alarm events'
+var alarms: Dictionary = {}
+
+# holds the last update, per key
+var alarm_last_update: Dictionary = {}
+
+func register_alarm(id: StringName, alarm_path: NodePath) -> void:
+	alarms[id] = alarm_path
+	var last_update = get_alarm_state(id)
+	get_node(alarm_path).alarm_update(last_update)
+
+func unregister_alarm(id: StringName) -> bool:
+	return alarms.erase(id)
+
+func get_alarm_state(id: StringName) -> Variant:
+	return alarm_last_update.get_or_add(id, {})
+
+func _update_alarm(id: StringName, data) -> void:
+	get_alarm_state(id).merge(data, true)
+	if id in alarms:
+		get_node(alarms[id]).alarm_update(data)
+
+
+# keys are stringnames, values are NodePaths that can handle 'indicator events'
+var indicators: Dictionary = {}
+
+# holds the last update, per key
+var indicator_last_update: Dictionary = {}
+
+func register_indicator(id: StringName, indicator_path: NodePath) -> void:
+	indicators[id] = indicator_path
+	var last_update = get_indicator_state(id)
+	get_node(indicator_path).indicator_update(last_update)
+
+func unregister_indicator(id: StringName) -> bool:
+	return indicators.erase(id)
+
+func get_indicator_state(id: StringName) -> Variant:
+	return indicator_last_update.get_or_add(id, false)
+
+func _update_indicator(id: StringName, data: bool) -> void:
+	indicator_last_update[id] = data
+	if id in indicators:
+		get_node(indicators[id]).indicator_update(data)
+
+
 # keys are stringnames, values are NodePaths that can handle 'switch events'
 var switches: Dictionary = {}
 
 # holds the last update, per key
 var switch_last_update: Dictionary = {}
 
+# holds switches updated by the client
 var _client_updated_switches: Dictionary = {}
 
 func register_switch(id: StringName, switch_path: NodePath) -> void:
@@ -95,6 +143,34 @@ func _update_switch(id: StringName, data) -> void:
 
 func client_update_switch(id: StringName, data) -> void:
 	_client_updated_switches[id] = data
+
+# keys are stringnames, values are NodePaths that can handle 'button events'
+var buttons: Dictionary = {}
+
+# holds the last update, per key
+var button_last_update: Dictionary = {}
+
+# holds buttons updated by the client
+var _client_updated_buttons: Dictionary = {}
+
+func register_button(id: StringName, button_path: NodePath) -> void:
+	buttons[id] = button_path
+	var last_update = get_button_state(id)
+	get_node(button_path).button_update(last_update)
+
+func unregister_button(id: StringName) -> bool:
+	return buttons.erase(id)
+
+func get_button_state(id: StringName) -> Variant:
+	return button_last_update.get_or_add(id, {})
+
+func _update_button(id: StringName, data) -> void:
+	get_button_state(id).merge(data, true)
+	if id in buttons:
+		get_node(buttons[id]).button_update(data)
+
+func client_update_button(id: StringName, data) -> void:
+	_client_updated_buttons[id] = data
 
 # TODO: insert code for the rest of the network objects here
 # NOTE: code for indicators needs to be slightly different
@@ -164,10 +240,12 @@ func _process_login(delta):
 									_update_alarm(name, info[name])
 							"rods":
 								for name in info:
-									_update_rod(name, info[name])
+									#_update_rod(name, info[name])
+									continue
 							"recorders":
 								for name in info:
-									_update_recorder(name, info[name])
+									#_update_recorder(name, info[name])
+									continue
 					ServerPackets.USER_LOGIN_ACK:
 						if downloads_complete.values().has(false):
 							net_disconnect("incomplete download")
