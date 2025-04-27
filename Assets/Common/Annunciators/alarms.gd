@@ -1,23 +1,27 @@
 extends Node3D
 
-@onready var node_3d = $"/root/Node3D"
+@export var id: StringName
+
 @onready var alarm_group = self.name.substr(5,1)
 
 func _ready():
-	while true:
-		var alarm_active = not node_3d.alarm_groups[alarm_group]["F"]
-		var clear_alarm_active = not node_3d.alarm_groups[alarm_group]["S"]
-		
-		var fast_alarm = get_node("Fast")
-		var slow_alarm = get_node("Slow")
-		#play/stop if needed
-		if fast_alarm.playing != alarm_active:
-			fast_alarm.playing = alarm_active
-	
-		if slow_alarm.playing != clear_alarm_active:
-			slow_alarm.playing = clear_alarm_active
-			
-		
-		
-		await get_tree().create_timer(0.1).timeout
-	
+	if id == &"":
+		id = StringName(alarm_group)
+		push_warning("id property of alarm group is empty, using group name %s" % alarm_group)
+	Network.register_group(id, get_path())
+
+
+func group_update(info):
+	var fast_alarm = get_node("Fast")
+	var slow_alarm = get_node("Slow")
+	if "F" in info:
+		var fast_active = not info["F"]
+		if fast_active:
+			Network._dprint(id)
+		if fast_alarm.playing != fast_active:
+			fast_alarm.playing = fast_active
+
+	if "S" in info:
+		var slow_active = not info["S"]
+		if slow_alarm.playing != slow_active:
+			slow_alarm.playing = slow_active

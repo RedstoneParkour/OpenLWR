@@ -103,6 +103,28 @@ func _update_alarm(id: StringName, data) -> void:
 		get_node(alarms[id]).alarm_update(data)
 
 
+# keys are stringnames, values are NodePaths that can handle 'group events'
+var groups: Dictionary = {}
+
+# holds the last update, per key
+var group_last_update: Dictionary = {}
+
+func register_group(id: StringName, group_path: NodePath) -> void:
+	groups[id] = group_path
+	var last_update = get_group_state(id)
+	get_node(group_path).group_update(last_update)
+
+func unregister_group(id: StringName) -> bool:
+	return groups.erase(id)
+
+func get_group_state(id: StringName) -> Variant:
+	return group_last_update.get_or_add(id, {})
+
+func _update_group(id: StringName, data) -> void:
+	get_group_state(id).merge(data, true)
+	if id in groups:
+		get_node(groups[id]).group_update(data)
+
 # keys are stringnames, values are NodePaths that can handle 'indicator events'
 var indicators: Dictionary = {}
 
@@ -322,6 +344,9 @@ func _process_connected_receive(id: int, data: String):
 			for alarm in updated_alarms:
 				var info = updated_alarms[alarm]
 				_update_alarm(alarm, info)
+			for group in updated_groups:
+				var info = updated_groups[group]
+				_update_group(group, info)
 		ServerPackets.BUTTON_PARAMETERS_UPDATE:
 			var updated_buttons = JSON.parse_string(data)
 			print(updated_buttons)
