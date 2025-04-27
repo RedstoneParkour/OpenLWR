@@ -2703,6 +2703,7 @@ radius = 0.471596
 height = 0.559508
 material = SubResource("StandardMaterial3D_cpb2u")
 script = ExtResource("12_hwagm")
+id = &"SCRAM_A1"
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Control Room Panels/Main Panel Center/Controls/SCRAM1/Node3D/SCRAM_A1"]
 
@@ -2747,6 +2748,7 @@ radius = 0.471596
 height = 0.559508
 material = SubResource("StandardMaterial3D_cpb2u")
 script = ExtResource("12_hwagm")
+id = &"SCRAM_B1"
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Control Room Panels/Main Panel Center/Controls/SCRAM1/Node3D2/SCRAM_B1"]
 
@@ -2844,6 +2846,7 @@ radius = 0.471596
 height = 0.559508
 material = SubResource("StandardMaterial3D_cpb2u")
 script = ExtResource("12_hwagm")
+id = &"SCRAM_A2"
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Control Room Panels/Main Panel Center/Controls/SCRAM2/Node3D/SCRAM_A2"]
 
@@ -2888,6 +2891,7 @@ radius = 0.471596
 height = 0.559508
 material = SubResource("StandardMaterial3D_cpb2u")
 script = ExtResource("12_hwagm")
+id = &"SCRAM_B2"
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Control Room Panels/Main Panel Center/Controls/SCRAM2/Node3D2/SCRAM_B2"]
 
@@ -2911,6 +2915,7 @@ use_collision = true
 size = Vector3(0.002, 0.042, 0.042)
 material = SubResource("StandardMaterial3D_umpcg")
 script = ExtResource("14_bc77r")
+id = &"ALARM_ACK_1"
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Control Room Panels/Main Panel Center/Controls/Annunciation/ALARM_ACK_1"]
 
@@ -2924,6 +2929,7 @@ use_collision = true
 size = Vector3(0.002, 0.042, 0.042)
 material = SubResource("StandardMaterial3D_umpcg")
 script = ExtResource("14_bc77r")
+id = &"ALARM_RESET_1"
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Control Room Panels/Main Panel Center/Controls/Annunciation/ALARM_RESET_1"]
 
@@ -4347,6 +4353,7 @@ use_collision = true
 size = Vector3(0.002, 0.042, 0.042)
 material = SubResource("StandardMaterial3D_2dm8g")
 script = ExtResource("14_bc77r")
+id = &"SCRAM_RESET_A"
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Control Room Panels/Main Panel Center/Controls/SCRAM_RESET_A"]
 
@@ -4375,6 +4382,7 @@ use_collision = true
 size = Vector3(0.002, 0.042, 0.042)
 material = SubResource("StandardMaterial3D_2dm8g")
 script = ExtResource("14_bc77r")
+id = &"SCRAM_RESET_B"
 
 [node name="StaticBody3D" type="StaticBody3D" parent="Control Room Panels/Main Panel Center/Controls/SCRAM_RESET_B"]
 

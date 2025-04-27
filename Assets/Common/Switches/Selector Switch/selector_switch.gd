@@ -1,7 +1,7 @@
 
 extends Node3D
 
-@export var id: String
+@export var id: StringName
 
 enum SwitchFlag {
 	GREEN,
@@ -61,6 +61,9 @@ func _string_to_flag(flag: String):
 			return SwitchFlag.RED
 
 func _ready():
+	if id == &"":
+		id = StringName(name)
+		push_warning("id property of button is empty, using node name %s" % id)
 	Network.register_switch(id, self.get_path())
 	player.unclick_left.connect(switch_unclick)
 
@@ -71,10 +74,10 @@ func switch_update(info: Dictionary):
 		switch_positions = info.positions
 	if "flag" in info:
 		switch_flag = _string_to_flag(info.flag)
-	print(info)
+	switch_model_update()
 
 func switch_model_update(nosound: bool = false):
-	var rotate_position = switch_positions[str(switch_position)]
+	var rotate_position = switch_positions.get(str(switch_position), 0)
 	var handle_rotation = round($"selector_switch/Handle".rotation_degrees.y)
 	
 	# used in the case where a switch was modeled such that it needs to be rotated the opposite direction

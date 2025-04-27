@@ -175,7 +175,7 @@ func get_button_state(id: StringName) -> Variant:
 	return button_last_update.get_or_add(id, {})
 
 func _update_button(id: StringName, data) -> void:
-	get_button_state(id).merge(data, true)
+	button_last_update[id] = data
 	if id in buttons:
 		print(id, data)
 		get_node(buttons[id]).button_update(data)
