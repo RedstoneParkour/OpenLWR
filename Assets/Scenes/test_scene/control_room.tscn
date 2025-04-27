@@ -100,7 +100,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.36062, 0.920411, 0)
 material = SubResource("StandardMaterial3D_gninv")
 
 [node name="Box1" parent="." instance=ExtResource("8_wllca")]
-transform = Transform3D(-4.37114e-08, 0, -1, 0, 1, 0, 1, 0, -4.37114e-08, 0.797207, 1.96649, -3.38308)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.797207, 1.96649, -3.38308)
 script = ExtResource("9_0yiso")
 
 [node name="Label" parent="Box1/Box/Windows/A1" index="0"]
