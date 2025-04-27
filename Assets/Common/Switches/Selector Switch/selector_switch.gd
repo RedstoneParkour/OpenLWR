@@ -52,7 +52,13 @@ func _flag_to_string(flag: SwitchFlag):
 			return "green"
 		SwitchFlag.RED:
 			return "red"
-		
+
+func _string_to_flag(flag: String):
+	match flag:
+		"green":
+			return SwitchFlag.GREEN
+		"red":
+			return SwitchFlag.RED
 
 func _ready():
 	Network.register_switch(id, self.get_path())
@@ -64,7 +70,7 @@ func switch_update(info: Dictionary):
 	if "positions" in info:
 		switch_positions = info.positions
 	if "flag" in info:
-		switch_flag = info.flag
+		switch_flag = _string_to_flag(info.flag)
 	print(info)
 
 func switch_model_update(nosound: bool = false):
