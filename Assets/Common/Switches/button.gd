@@ -13,13 +13,7 @@ func _ready():
 		push_warning("id property of button is empty, using node name %s" % id)
 	Network.register_button(id, get_path())
 	player.unclick_left.connect(un_click)
-	if get_node_or_null("StaticBody3D") != null:
-		#$"StaticBody3D".input_event.connect(switch_click)
-		pass
-	elif get_node_or_null("Press") != null:
-		#$"Press".input_event.connect(switch_click)
-		pass
-	
+
 func button_state_change(state: bool, update_server: bool = true):
 	button_state = state
 	if update_server:
