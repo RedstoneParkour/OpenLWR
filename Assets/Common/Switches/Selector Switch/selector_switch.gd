@@ -8,16 +8,24 @@ enum SwitchFlag {
 	RED,
 }
 
+enum RotateOpposite {
+	NO,
+	UNSPECIFIED,
+	YES,
+}
+
 @onready var player = $"/root/Node3D/Player"
 var switch_position: int
 var switch_positions: Dictionary
 var switch_flag: SwitchFlag
 var switch_local_push: bool = false
 var switch_momentary: bool
-@export var rotate_opposite: bool = false
+@export var rotate_opposite: RotateOpposite = RotateOpposite.UNSPECIFIED
 @onready var has_flag = get_node_or_null("selector_switch/Flag")
 var flag_green = null
 var flag_red = null
+
+var light_nodes: Dictionary = {}
 
 #func init():
 	#switch = node_3d.switches[self.name]
@@ -46,6 +54,19 @@ var flag_red = null
 		#
 	#switch_position_change(switch["position"],true)
 
+func _find_light_node(id: StringName):
+	if light_nodes.has(id):
+		return light_nodes[id]
+	var node
+	if id == &"green" or id == &"red":
+		node = get_node(id+"/Lamp")
+	else:
+		node = get_node(NodePath(id))
+	if node:
+		node.material = node.material.duplicate()
+	light_nodes[id] = node
+	return node
+
 func _flag_to_string(flag: SwitchFlag):
 	match flag:
 		SwitchFlag.GREEN:
@@ -63,11 +84,18 @@ func _string_to_flag(flag: String):
 func _ready():
 	if id == &"":
 		id = StringName(name)
-		push_warning("id property of button is empty, using node name %s" % id)
+		push_warning("id property of selector switch is empty, using node name %s" % id)
+	if rotate_opposite == RotateOpposite.UNSPECIFIED:
+		rotate_opposite = RotateOpposite.YES if has_node("rotate_opposite") else RotateOpposite.NO
+		push_warning("rotate_opposite property of switch %s left unspecified, using node check" % id)
 	Network.register_switch(id, self.get_path())
 	player.unclick_left.connect(switch_unclick)
 
 func switch_update(info: Dictionary):
+	if "lights" in info:
+		for name in info.lights:
+			_find_light_node(name)
+			light_nodes[name].material.emission_enabled = info.lights[name]
 	if "position" in info:
 		switch_position = info.position
 	if "positions" in info:
@@ -81,7 +109,7 @@ func switch_model_update(nosound: bool = false):
 	var handle_rotation = round($"selector_switch/Handle".rotation_degrees.y)
 	
 	# used in the case where a switch was modeled such that it needs to be rotated the opposite direction
-	if rotate_opposite:
+	if rotate_opposite == RotateOpposite.YES:
 		rotate_position = rotate_position * -1
 	if handle_rotation != rotate_position:
 		if not nosound:
