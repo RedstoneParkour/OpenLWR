@@ -1275,7 +1275,16 @@ func init_scene():
 		
 	build_rod_select()
 
+#const remote_player_scene = preload("res://Assets/Scenes/Player/remote_player.tscn")
+
+func _on_new_player(username: StringName) -> void:
+	var instance = remote_player_scene.instantiate()
+	instance.name = username
+	add_child(instance)
+
 func _ready(): # assume here that the scene was called by the lobby screen
+	Network.new_player.connect(_on_new_player)
+	return
 	var endpoint = "ws://%s/ws" % [globals.server_ip_requested_tojoin] # TODO: should token be generated on server-side?
 	socket.connect_to_url(endpoint)
 	
@@ -1288,6 +1297,7 @@ func parse_b64(b64):
 @onready var config = ConfigFile.new()
 
 func _process(delta):
+	return
 	socket.poll()
 	var state = socket.get_ready_state()
 	globals.connection_state = state
@@ -1551,7 +1561,7 @@ func _process(delta):
 				var player_rotation = players[player].rotation
 				var actual_position = players[player].object.position
 				var twn = create_tween()
-				twn.tween_property(players[player].object,"position",Vector3(player_position['x'],player_position['y'],player_position['z']),0.1)
+				twn.tween_property(players[player].object, "position", Vector3(player_position['x'], player_position['y'], player_position['z']), 0.1)
 				twn.set_trans(Tween.TRANS_LINEAR)
 				twn.set_ease(Tween.EASE_IN_OUT)
 				twn.play()

@@ -10,6 +10,7 @@ signal connected()
 signal disconnected()
 
 signal chat_message(message: String)
+signal new_player(name: StringName)
 
 enum State {
 	READY,
@@ -205,6 +206,36 @@ func _update_button(id: StringName, data) -> void:
 func client_update_button(id: StringName, data) -> void:
 	_client_updated_buttons[id] = data
 
+
+var players: Dictionary = {}
+
+var player_last_update: Dictionary = {}
+
+func register_player(name: StringName, player_path: NodePath) -> void:
+	players[name] = player_path
+	var last_update = get_player_state(name)
+	get_node(player_path).player_update(last_update)
+
+func unregister_player(name: StringName) -> bool:
+	return players.erase(name)
+
+func get_player_state(name: StringName) -> Variant:
+	return player_last_update.get(name)
+
+func _update_player(name: StringName, data) -> void:
+	if name in player_last_update and data != null:
+		get_player_state(name).merge(data, true)
+	else:
+		player_last_update[name] = data
+
+	if name in players:
+		get_node(players[name]).player_update(data)
+	else:
+		# new player!
+		new_player.emit(name)
+	pass
+
+
 # TODO: insert code for the rest of the network objects here
 # NOTE: code for indicators needs to be slightly different
 
@@ -358,6 +389,14 @@ func _process_connected_receive(id: int, data: String):
 				_update_button(button, info)
 		ServerPackets.CHAT:
 			chat_message.emit(data)
+		ServerPackets.PLAYER_POSITION_PARAMETERS_UPDATE:
+			var updated_players = JSON.parse_string(data)
+			for player in updated_players:
+				var new_info = updated_players[player]
+				if player == username:
+					continue # its us, ignore this one
+
+				_update_player(player, new_info)
 
 func _process_connected_send():
 	_send_player_info()
@@ -393,6 +432,8 @@ func _process_disconnecting(delta):
 		WebSocketPeer.STATE_CLOSED:
 			disconnect_reason = socket.get_close_reason()
 			disconnect_code = socket.get_close_code()
+			disconnected.emit(disconnect_reason, disconnect_code)
+			print(disconnect_code, disconnect_reason)
 
 func _on_ready():
 	set_process(false)
