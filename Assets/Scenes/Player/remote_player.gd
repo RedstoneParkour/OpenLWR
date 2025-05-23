@@ -3,6 +3,7 @@ extends CharacterBody3D
 var target_position: Vector3 = position
 var prev_position: Vector3 = position
 var time_since_update: float = 0
+var last_update_time: float = 0.1
 
 func _dict_to_vec3(dict: Dictionary) -> Vector3:
 	return Vector3(dict["x"], dict["y"], dict["z"])
@@ -22,14 +23,14 @@ func player_update(data: Dictionary):
 		return
 	prev_position = target_position
 	target_position = _dict_to_vec3(data["position"])
-	time_since_update = 0
+	print(time_since_update)
+	last_update_time = clamp(time_since_update, 1.0/60, 1.0/5)
 	pass
 
 func _process(delta: float):
-	var weight: float = clamp(ease(time_since_update / 0.1, -2.0), 0.0, 1.0)
+	var weight: float = clamp(ease(time_since_update / last_update_time, -2.0), 0.0, 1.0)
 	position = lerp(prev_position, target_position, weight)
 	time_since_update += delta
-	print(time_since_update)
 	pass
 
 func _ready():
