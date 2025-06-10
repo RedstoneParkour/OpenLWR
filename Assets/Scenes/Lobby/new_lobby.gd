@@ -1,5 +1,7 @@
 extends Control
 
+var _requested_scene_path: String
+
 func connect_server(ip: String, requested_scene: String):
 
 	var server_ip_requested = ip
@@ -7,37 +9,20 @@ func connect_server(ip: String, requested_scene: String):
 	globals.server_ip_requested_tojoin = server_ip_requested
 	globals.username_requested_tojoin = username_requested
 	globals.use_vr = $Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/HBoxContainer/VREnable.button_pressed
+
+	Network.username = username_requested
+	_requested_scene_path = "res://Assets/Scenes/%s/control_room.tscn" % requested_scene
 	Network.connect_async(server_ip_requested)
-	if ResourceLoader.exists("res://Assets/Scenes/%s/control_room.tscn" % requested_scene):
-		get_tree().change_scene_to_file("res://Assets/Scenes/%s/control_room.tscn" % requested_scene)
-	else:
-		print("This scene doesnt exist, we cant change to it")
+	ResourceLoader.load_threaded_request(_requested_scene_path)
+
+func _on_connected():
+	get_tree().change_scene_to_packed(ResourceLoader.load_threaded_get(_requested_scene_path))
 
 
-func _parse_arguments() -> Dictionary:
-	var arguments = {}
-	for argument in OS.get_cmdline_user_args():
-		if argument.find("=") > -1:
-			var key_value = argument.split("=")
-			arguments[key_value[0].lstrip("--")] = key_value[1]
-		else:
-			# Options without an argument will be present in the dictionary,
-			# with the value set to an empty string.
-			arguments[argument.lstrip("--")] = ""
-	return arguments
 
 func _ready():
-	var arguments = _parse_arguments()
-	var djoin_scene = 2
-	var djoin_ip = "127.0.0.1:7001"
-	if arguments.has("username"):
-		$Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/HBoxContainer/LineEdit.text = arguments.username
-	if arguments.has("scene"):
-		djoin_scene = arguments.scene
-	if arguments.has("join"):
-		if not arguments.join.is_empty():
-			djoin_ip = arguments.join
-		connect_server(djoin_ip, djoin_scene)
+	Network.connected.connect(_on_connected)
+	
 		
 	if globals.disconnect_msg != "":
 		$KickMessage/VBoxContainer/Name/Label.text = "You were disconnected with reason:\n%s" % globals.disconnect_msg

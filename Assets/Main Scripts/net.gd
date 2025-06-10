@@ -239,6 +239,18 @@ func _update_player(name: StringName, data) -> void:
 # TODO: insert code for the rest of the network objects here
 # NOTE: code for indicators needs to be slightly different
 
+func _parse_arguments() -> Dictionary:
+	var arguments = {}
+	for argument in OS.get_cmdline_user_args():
+		if argument.find("=") > -1:
+			var key_value = argument.split("=")
+			arguments[key_value[0].lstrip("--")] = key_value[1]
+		else:
+			# Options without an argument will be present in the dictionary,
+			# with the value set to an empty string.
+			arguments[argument.lstrip("--")] = ""
+	return arguments
+
 func _build_packet(id: int, data: String):
 	# why do we base64 data if data is always JSON?
 	return "%d|%s" % [id, Marshalls.utf8_to_base64(data)]
@@ -280,10 +292,11 @@ func _process_connecting(delta):
 			net_disconnect("socket closed while connecting")
 
 func _send_player_info():
+	var info = {}
 	if player:
 		var pos = player.position
 		var rot = player.rotation
-		var info = {
+		info = {
 			username: {
 				position = {
 					x = pos.x,
@@ -297,8 +310,8 @@ func _send_player_info():
 				}
 			}
 		}
-		var data = JSON.stringify(info)
-		_send_packet(ClientPackets.PLAYER_POSITION_PARAMETERS_UPDATE, data)
+	var data = JSON.stringify(info)
+	_send_packet(ClientPackets.PLAYER_POSITION_PARAMETERS_UPDATE, data)
 
 func _process_login(delta):
 	socket.poll()
@@ -472,6 +485,14 @@ func _ready():
 	begin_login.connect(_on_login)
 	disconnected.connect(_on_ready)
 	_on_ready()
+	var arguments = _parse_arguments()
+	var djoin_ip = "127.0.0.1:7001"
+	if arguments.has("username"):
+		username = arguments.username
+	if arguments.has("join"):
+		if not arguments.join.is_empty():
+			djoin_ip = arguments.join
+		connect_async(djoin_ip)
 	pass
 
 func _init():
