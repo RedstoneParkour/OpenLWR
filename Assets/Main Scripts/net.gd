@@ -73,7 +73,7 @@ func unregister_gauge(id: StringName) -> bool:
 	return gauges.erase(id)
 
 func get_gauge_state(id: StringName) -> Variant:
-	return gauge_last_update.get_or_add(id, {})
+	return gauge_last_update.get_or_add(id, 0.0)
 
 func _update_gauge(id: StringName, data) -> void:
 	gauge_last_update[id] = data
