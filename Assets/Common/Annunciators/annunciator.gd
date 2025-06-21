@@ -18,7 +18,8 @@ var ann_light = {}
 
 func _ready():
 	set_process(false)
-	await Network.connected
+	if Network.current_state != Network.State.CONNECTED:
+		await Network.connected
 	for alarm_id in alarm_dict:
 		var alarm = alarm_dict[alarm_id]
 		var alarm_node = get_node("%s/Windows/%s" % [alarm.box, alarm.window])
