@@ -20,34 +20,6 @@ enum State {
 	DISCONNECTING,
 }
 
-enum ClientPackets {
-	SWITCH_PARAMETERS_UPDATE = 2,
-	BUTTON_PARAMETERS_UPDATE = 6,
-	PLAYER_POSITION_PARAMETERS_UPDATE = 9,
-	ROD_SELECT_UPDATE = 11,
-	USER_LOGIN = 12,
-	SYNCHRONIZE = 14,
-	CHAT = 15,
-	RCON = 19,
-	RECORDER = 21,
-}
-
-enum ServerPackets {
-	METER_PARAMETERS_UPDATE = 0,
-	USER_LOGOUT = 1,
-	SWITCH_PARAMETERS_UPDATE = 3,
-	INDICATOR_PARAMETERS_UPDATE = 4,
-	ALARM_PARAMETERS_UPDATE = 5,
-	BUTTON_PARAMETERS_UPDATE = 7,
-	PLAYER_POSITION_PARAMETERS_UPDATE = 8,
-	ROD_POSITION_PARAMETERS_UPDATE = 10,
-	USER_LOGIN_ACK = 13,
-	CHAT = 16,
-	DOWNLOAD_DATA = 17,
-	KICK = 18,
-	RECORDER = 20,
-}
-
 var disconnect_reason: String
 var disconnect_code: int = 0
 
@@ -58,153 +30,37 @@ var player: Node3D
 
 var queued_chat_messages: Array[String] = ["test"]
 
-# keys are stringnames, values are NodePaths that can handle 'gauge events'
-var gauges: Dictionary = {}
+var inbound_packet_queue: Array[Dictionary] = []
 
-# holds the last update, per key
-var gauge_last_update: Dictionary = {}
+# keys are int, values are NodePath
+var devices: Dictionary = {}
 
-func register_gauge(id: StringName, gauge_path: NodePath) -> void:
-	gauges[id] = gauge_path
-	var last_update = get_gauge_state(id)
-	get_node(gauge_path).gauge_update(last_update)
+# keys are int, values vary
+var device_last_update: Dictionary = {}
 
-func unregister_gauge(id: StringName) -> bool:
-	return gauges.erase(id)
+# keys are int, values are boolean
+var _client_updated_devices: Dictionary = {}
 
-func get_gauge_state(id: StringName) -> Variant:
-	return gauge_last_update.get_or_add(id, 0.0)
+func register_device(id: int, device_path: NodePath) -> void:
+	devices[id] = device_path
+	var last_update = get_device_state(id)
+	get_node(device_path).net_update(last_update)
 
-func _update_gauge(id: StringName, data) -> void:
-	gauge_last_update[id] = data
-	if id in gauges:
-		get_node(gauges[id]).gauge_update(data)
+func unregister_device(id: int) -> bool:
+	return devices.erase(id)
 
+func get_device_state(id: int) -> Variant:
+	return device_last_update.get_or(id, null)
 
-# keys are stringnames, values are NodePaths that can handle 'alarm events'
-var alarms: Dictionary = {}
+func _update_device(id: int, data) -> void:
+	device_last_update.insert(id, data)
+	if id in devices:
+		get_node(devices[id]).net_update(data)
 
-# holds the last update, per key
-var alarm_last_update: Dictionary = {}
-
-func register_alarm(id: StringName, alarm_path: NodePath) -> void:
-	alarms[id] = alarm_path
-	var last_update = get_alarm_state(id)
-	get_node(alarm_path).alarm_update(last_update)
-
-func unregister_alarm(id: StringName) -> bool:
-	return alarms.erase(id)
-
-func get_alarm_state(id: StringName) -> Variant:
-	return alarm_last_update.get_or_add(id, {})
-
-func _update_alarm(id: StringName, data) -> void:
-	get_alarm_state(id).merge(data, true)
-	if id in alarms:
-		get_node(alarms[id]).alarm_update(data)
-
-
-# keys are stringnames, values are NodePaths that can handle 'group events'
-var groups: Dictionary = {}
-
-# holds the last update, per key
-var group_last_update: Dictionary = {}
-
-func register_group(id: StringName, group_path: NodePath) -> void:
-	groups[id] = group_path
-	var last_update = get_group_state(id)
-	get_node(group_path).group_update(last_update)
-
-func unregister_group(id: StringName) -> bool:
-	return groups.erase(id)
-
-func get_group_state(id: StringName) -> Variant:
-	return group_last_update.get_or_add(id, {})
-
-func _update_group(id: StringName, data) -> void:
-	get_group_state(id).merge(data, true)
-	if id in groups:
-		get_node(groups[id]).group_update(data)
-
-# keys are stringnames, values are NodePaths that can handle 'indicator events'
-var indicators: Dictionary = {}
-
-# holds the last update, per key
-var indicator_last_update: Dictionary = {}
-
-func register_indicator(id: StringName, indicator_path: NodePath) -> void:
-	indicators[id] = indicator_path
-	var last_update = get_indicator_state(id)
-	get_node(indicator_path).indicator_update(last_update)
-
-func unregister_indicator(id: StringName) -> bool:
-	return indicators.erase(id)
-
-func get_indicator_state(id: StringName) -> Variant:
-	return indicator_last_update.get_or_add(id, false)
-
-func _update_indicator(id: StringName, data: bool) -> void:
-	indicator_last_update[id] = data
-	if id in indicators:
-		get_node(indicators[id]).indicator_update(data)
-
-
-# keys are stringnames, values are NodePaths that can handle 'switch events'
-var switches: Dictionary = {}
-
-# holds the last update, per key
-var switch_last_update: Dictionary = {}
-
-# holds switches updated by the client
-var _client_updated_switches: Dictionary = {}
-
-func register_switch(id: StringName, switch_path: NodePath) -> void:
-	switches[id] = switch_path
-	var last_update = get_switch_state(id)
-	get_node(switch_path).switch_update(last_update)
-
-func unregister_switch(id: StringName) -> bool:
-	return switches.erase(id)
-
-func get_switch_state(id: StringName) -> Variant:
-	return switch_last_update.get_or_add(id, {})
-
-func _update_switch(id: StringName, data) -> void:
-	get_switch_state(id).merge(data, true)
-	if id in switches:
-		get_node(switches[id]).switch_update(data)
-
-func client_update_switch(id: StringName, data) -> void:
-	_client_updated_switches[id] = data
-
-# keys are stringnames, values are NodePaths that can handle 'button events'
-var buttons: Dictionary = {}
-
-# holds the last update, per key
-var button_last_update: Dictionary = {}
-
-# holds buttons updated by the client
-var _client_updated_buttons: Dictionary = {}
-
-func register_button(id: StringName, button_path: NodePath) -> void:
-	buttons[id] = button_path
-	var last_update = get_button_state(id)
-	get_node(button_path).button_update(last_update)
-
-func unregister_button(id: StringName) -> bool:
-	return buttons.erase(id)
-
-func get_button_state(id: StringName) -> Variant:
-	return button_last_update.get_or_add(id, {})
-
-func _update_button(id: StringName, data) -> void:
-	get_button_state(id).merge(data, true)
-	if id in buttons:
-		print(id, data)
-		get_node(buttons[id]).button_update(data)
-
-func client_update_button(id: StringName, data) -> void:
-	_client_updated_buttons[id] = data
+# net_read should be of the form (PackedByteArray) -> [Variant, PackedByteArray]
+func _read_device_data(id: int, buf: PackedByteArray) -> Array:
+	if id in devices:
+		return get_node(devices[id]).net_read(buf)
 
 
 var players: Dictionary = {}
@@ -251,28 +107,13 @@ func _parse_arguments() -> Dictionary:
 			arguments[argument.lstrip("--")] = ""
 	return arguments
 
-func _build_packet(id: int, data: String):
-	# why do we base64 data if data is always JSON?
-	return "%d|%s" % [id, Marshalls.utf8_to_base64(data)]
-
-func _send_packet(id: int, data: String):
-	var packet = _build_packet(id, data)
-	socket.send_text(packet)
-
 var current_state: State = State.READY
 
-var downloads_complete: Dictionary = {
-	switches = false,
-	buttons = false,
-	alarms = false,
-	rods = false,
-	recorders = false,
-	}
 
-var socket: WebSocketPeer = WebSocketPeer.new()
+var socket: PacketPeer = PacketPeerUdp.new()
 
-func connect_async(url):
-	print(socket.connect_to_url(url))
+func connect_async(host, port := 7001):
+	print(socket.connect_to_host(host, port))
 	current_state = State.CONNECTING
 	connecting.emit()
 
@@ -467,9 +308,25 @@ func _on_connecting():
 	set_process(true)
 	pass
 
+func _read_packets():
+	while socket.get_available_packet_count() > 0:
+		var packet = PacketDecoder(socket.get_packet())
+		if packet.pop_s32() != 0x1312:
+			return net_disconnect("invalid packet header")
+		var proto_version = pop_vu32(packet, 2)
+		# what's 'version 1.0' represented as???
+		var flags = pop_vu32(packet, 4)
+		# no clue how to decode this, keep as-is i suppose
+		inbound_packet_queue.append({
+			version: proto_version,
+			flags: flags,
+			rest: packet
+		})
+
 func _process(delta):
 	_dprint("")
 	_dprint(current_state)
+	_read_packets()
 	match current_state:
 		State.CONNECTING:
 			_process_connecting(delta)
@@ -494,6 +351,3 @@ func _ready():
 			djoin_ip = arguments.join
 		connect_async(djoin_ip)
 	pass
-
-func _init():
-	socket.inbound_buffer_size = 1_048_576 # = 2^20
