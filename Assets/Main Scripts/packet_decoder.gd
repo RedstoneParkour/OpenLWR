@@ -59,7 +59,7 @@ class VarintResult:
 		if ok:
 			return result
 		else:
-			Array.new()[3] # cause a script error
+			Array()[3] # cause a script error
 
 func _pop_varint(max_bytes: int) -> VarintResult:
 	# adapted from https://minecraft.wiki/w/Java_Edition_protocol/Data_types#VarInt_and_VarLong
@@ -174,40 +174,45 @@ func dec_submsg(map, val: PackedByteArray, prev = null) -> Dictionary:
 
 func dec_packed_repeated(popperName: StringName, val: PackedByteArray, prev = null) -> Array:
 	var decoder = PacketDecoder.new(val)
-	var ret = []
+	var ret
+	if prev != null:
+		ret = prev
+	else:
+		ret = []
 	while not decoder.is_empty():
-		ret.insert(decoder.call(popperName))
+		ret.append(decoder.call(popperName))
 	return ret
 
 func dec_unpacked_repeated(decoder, val, prev = null) -> Array:
 	if prev == null:
 		prev = []
-	prev.append(decoder(val))
+	prev.append(decoder.call(val))
 	return prev
 	
 
 # dictionary of message id to decoding callable
-func pop_message(map) -> Dictionary:
-	var ret = {}
+func pop_message(map: Dictionary[int, Callable]) -> Dictionary:
+	var ret: Dictionary[int, Variant] = {}
 	while packet.size() - _ofs > 0:
-		var tag = pop_vu64()
-		var wtype = tag & 0x7
-		var id = tag >> 3
-		var val
+		var tag := pop_vu64()
+		var wtype := tag & 0x7
+		var id := tag >> 3
+		var val: Variant
 		match wtype:
 			0:#VARINT
 				val = pop_vu64()
 			1:#I64
 				val = pop_u64()
 			2:#LEN
-				var l = pop_vu32()
+				var l := pop_vu32()
 				val = packet.slice(_ofs, _ofs+l)
-				_ofs = _ofs+l
+				_ofs += l
 			3,4:#SGROUP,EGROUP
 				assert(false,"SGROUP and EGROUP are not supported")
 			5:#I32
 				val = pop_u32()
-		ret[id] = map[id](val, ret.get(id))
+		ret[id] = map[id].call(val, ret.get(id))
+	return ret
 
 func is_empty():
 	return _ofs == packet.size()
