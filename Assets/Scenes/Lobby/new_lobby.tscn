@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3 uid="uid://dmffnfkuj0cd4"]
+[gd_scene format=3 uid="uid://dmffnfkuj0cd4"]
 
 [ext_resource type="Script" uid="uid://b1vu2nho6mala" path="res://Assets/Scenes/Lobby/new_lobby.gd" id="1_dc5mj"]
 [ext_resource type="Script" uid="uid://crm37d27o81yu" path="res://Assets/Scenes/Lobby/ServerList.gd" id="1_qdlwb"]
@@ -10,7 +10,7 @@ font_color = Color(1, 0, 0, 1)
 
 [sub_resource type="LabelSettings" id="LabelSettings_rtjwp"]
 
-[node name="Lobby" type="Control"]
+[node name="Lobby" type="Control" unique_id=2048926810]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -20,7 +20,7 @@ grow_vertical = 2
 mouse_filter = 1
 script = ExtResource("1_dc5mj")
 
-[node name="Panel" type="PanelContainer" parent="."]
+[node name="Panel" type="PanelContainer" parent="." unique_id=836353794]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.1
@@ -34,18 +34,19 @@ offset_bottom = 4.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="HSplitContainer" type="HSplitContainer" parent="Panel"]
+[node name="HSplitContainer" type="HSplitContainer" parent="Panel" unique_id=3737249]
 layout_mode = 2
 theme_override_constants/separation = 0
-split_offset = 975
+split_offsets = PackedInt32Array(975)
 dragger_visibility = 1
+split_offset = 975
 
-[node name="ServerList" type="Control" parent="Panel/HSplitContainer"]
+[node name="ServerList" type="Control" parent="Panel/HSplitContainer" unique_id=1024530776]
 layout_mode = 2
 mouse_filter = 1
 script = ExtResource("1_qdlwb")
 
-[node name="PanelContainer" type="PanelContainer" parent="Panel/HSplitContainer/ServerList"]
+[node name="PanelContainer" type="PanelContainer" parent="Panel/HSplitContainer/ServerList" unique_id=308018519]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.02
@@ -57,15 +58,15 @@ offset_bottom = -20.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ScrollContainer" type="ScrollContainer" parent="Panel/HSplitContainer/ServerList/PanelContainer"]
+[node name="ScrollContainer" type="ScrollContainer" parent="Panel/HSplitContainer/ServerList/PanelContainer" unique_id=1553559612]
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HSplitContainer/ServerList/PanelContainer/ScrollContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HSplitContainer/ServerList/PanelContainer/ScrollContainer" unique_id=1018047970]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/HSplitContainer/ServerList"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/HSplitContainer/ServerList" unique_id=650875406]
 layout_mode = 1
 anchors_preset = 12
 anchor_top = 1.0
@@ -76,37 +77,37 @@ grow_horizontal = 2
 grow_vertical = 0
 alignment = 1
 
-[node name="Add" type="Button" parent="Panel/HSplitContainer/ServerList/HBoxContainer"]
+[node name="Add" type="Button" parent="Panel/HSplitContainer/ServerList/HBoxContainer" unique_id=449210253]
 layout_mode = 2
 size_flags_horizontal = 6
 text = "Add Server..."
 
-[node name="Remove" type="Button" parent="Panel/HSplitContainer/ServerList/HBoxContainer"]
+[node name="Remove" type="Button" parent="Panel/HSplitContainer/ServerList/HBoxContainer" unique_id=872103219]
 layout_mode = 2
 size_flags_horizontal = 6
 disabled = true
 text = "Delete server"
 
-[node name="Refresh" type="Button" parent="Panel/HSplitContainer/ServerList/HBoxContainer"]
+[node name="Refresh" type="Button" parent="Panel/HSplitContainer/ServerList/HBoxContainer" unique_id=1441126908]
 layout_mode = 2
 size_flags_horizontal = 6
 text = "Refresh"
 
-[node name="Control" type="Control" parent="Panel/HSplitContainer"]
+[node name="Control" type="Control" parent="Panel/HSplitContainer" unique_id=584189102]
 layout_mode = 2
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/HSplitContainer/Control"]
-layout_mode = 2
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/HSplitContainer/Control" unique_id=314654720]
+layout_mode = 0
 offset_right = 817.0
 offset_bottom = 864.0
 
-[node name="ServerInfo" type="Control" parent="Panel/HSplitContainer/Control/HBoxContainer"]
+[node name="ServerInfo" type="Control" parent="Panel/HSplitContainer/Control/HBoxContainer" unique_id=22390005]
 custom_minimum_size = Vector2(500, 0)
 layout_direction = 2
 layout_mode = 2
 script = ExtResource("3_pb2tk")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo" unique_id=560837563]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.02
@@ -115,38 +116,38 @@ anchor_right = 0.98
 anchor_bottom = 1.0
 offset_bottom = 0.280029
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer"]
+[node name="HBoxContainer" type="HBoxContainer" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer" unique_id=328779054]
 layout_mode = 2
 
-[node name="Label" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/HBoxContainer"]
+[node name="Label" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/HBoxContainer" unique_id=627111170]
 layout_mode = 2
 text = "Username: "
 
-[node name="LineEdit" type="LineEdit" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/HBoxContainer"]
+[node name="LineEdit" type="LineEdit" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/HBoxContainer" unique_id=158987453]
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="VREnable" type="CheckBox" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/HBoxContainer"]
+[node name="VREnable" type="CheckBox" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/HBoxContainer" unique_id=682063240]
 layout_mode = 2
 text = "Use VR"
 
-[node name="InvalidUser" type="VBoxContainer" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer"]
+[node name="InvalidUser" type="VBoxContainer" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer" unique_id=658325028]
 visible = false
 layout_mode = 2
 
-[node name="Invalid" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/InvalidUser"]
+[node name="Invalid" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/InvalidUser" unique_id=57077114]
 layout_mode = 2
 text = "This username is invalid:
 "
 label_settings = SubResource("LabelSettings_7hd70")
 
-[node name="Requirements" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/InvalidUser"]
+[node name="Requirements" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/InvalidUser" unique_id=1701132800]
 layout_mode = 2
 text = "* Greater than 1 character
 * Less than 21 characters"
 label_settings = SubResource("LabelSettings_rtjwp")
 
-[node name="RichTextLabel" type="RichTextLabel" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer"]
+[node name="RichTextLabel" type="RichTextLabel" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer" unique_id=1480071479]
 layout_mode = 2
 size_flags_vertical = 3
 focus_mode = 2
@@ -159,31 +160,31 @@ version ding dong bing bong[/p]
 [font_size=30]<--- Select a server to begin[/font_size]"
 selection_enabled = true
 
-[node name="HBoxContainer2" type="HBoxContainer" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer"]
+[node name="HBoxContainer2" type="HBoxContainer" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer" unique_id=2138410544]
 layout_mode = 2
 size_flags_vertical = 8
 
-[node name="Join" type="Button" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/HBoxContainer2"]
+[node name="Join" type="Button" parent="Panel/HSplitContainer/Control/HBoxContainer/ServerInfo/VBoxContainer/HBoxContainer2" unique_id=14116537]
 layout_mode = 2
 size_flags_horizontal = 6
 disabled = true
 text = "Join server"
 
-[node name="Thanks" type="Control" parent="Panel/HSplitContainer/Control/HBoxContainer"]
+[node name="Thanks" type="Control" parent="Panel/HSplitContainer/Control/HBoxContainer" unique_id=145681458]
 layout_direction = 2
 layout_mode = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HSplitContainer/Control/HBoxContainer/Thanks"]
-layout_mode = 2
+[node name="VBoxContainer" type="VBoxContainer" parent="Panel/HSplitContainer/Control/HBoxContainer/Thanks" unique_id=769040732]
+layout_mode = 0
 offset_right = 270.0
 offset_bottom = 864.0
 
-[node name="Label" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/Thanks/VBoxContainer"]
+[node name="Label" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/Thanks/VBoxContainer" unique_id=1593838998]
 layout_mode = 2
 text = "Contribuitors"
 horizontal_alignment = 1
 
-[node name="Label2" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/Thanks/VBoxContainer"]
+[node name="Label2" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/Thanks/VBoxContainer" unique_id=794080743]
 layout_mode = 2
 text = "rogervanbommel
 Enthalpy
@@ -199,19 +200,19 @@ Fozzie-Bear
 
 "
 
-[node name="Label3" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/Thanks/VBoxContainer"]
+[node name="Label3" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/Thanks/VBoxContainer" unique_id=1586186763]
 layout_mode = 2
 text = "Donators"
 horizontal_alignment = 1
 
-[node name="Label4" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/Thanks/VBoxContainer"]
+[node name="Label4" type="Label" parent="Panel/HSplitContainer/Control/HBoxContainer/Thanks/VBoxContainer" unique_id=66582028]
 layout_mode = 2
 text = "flooficarr
 Robby (robbytheatomicengineer)
 Fozzie-Bear
 Cori"
 
-[node name="Add server" type="ConfirmationDialog" parent="."]
+[node name="Add server" type="ConfirmationDialog" parent="." unique_id=115632814]
 disable_3d = true
 title = "Add server"
 position = Vector2i(660, 390)
@@ -220,7 +221,7 @@ ok_button_text = "Add"
 dialog_hide_on_ok = false
 script = ExtResource("4_780co")
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Add server"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Add server" unique_id=515073532]
 anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5
@@ -232,41 +233,41 @@ offset_bottom = -49.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Name" type="HBoxContainer" parent="Add server/VBoxContainer"]
+[node name="Name" type="HBoxContainer" parent="Add server/VBoxContainer" unique_id=2064891137]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 6
 
-[node name="Label" type="Label" parent="Add server/VBoxContainer/Name"]
+[node name="Label" type="Label" parent="Add server/VBoxContainer/Name" unique_id=1455511254]
 layout_mode = 2
 text = "Server name:"
 
-[node name="LineEdit" type="LineEdit" parent="Add server/VBoxContainer/Name"]
+[node name="LineEdit" type="LineEdit" parent="Add server/VBoxContainer/Name" unique_id=1725871766]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 
-[node name="Ip" type="HBoxContainer" parent="Add server/VBoxContainer"]
+[node name="Ip" type="HBoxContainer" parent="Add server/VBoxContainer" unique_id=420937539]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 6
 
-[node name="Label" type="Label" parent="Add server/VBoxContainer/Ip"]
+[node name="Label" type="Label" parent="Add server/VBoxContainer/Ip" unique_id=338753832]
 layout_mode = 2
 text = "Server ip:"
 
-[node name="LineEdit" type="LineEdit" parent="Add server/VBoxContainer/Ip"]
+[node name="LineEdit" type="LineEdit" parent="Add server/VBoxContainer/Ip" unique_id=538599936]
 custom_minimum_size = Vector2(200, 0)
 layout_mode = 2
 size_flags_horizontal = 3
 
-[node name="KickMessage" type="AcceptDialog" parent="."]
+[node name="KickMessage" type="AcceptDialog" parent="." unique_id=1954185114]
 title = "Disconnected"
 position = Vector2i(660, 500)
 size = Vector2i(566, 200)
 min_size = Vector2i(200, 70)
 max_size = Vector2i(566, 200)
 
-[node name="VBoxContainer" type="VBoxContainer" parent="KickMessage"]
+[node name="VBoxContainer" type="VBoxContainer" parent="KickMessage" unique_id=1322937780]
 anchors_preset = 13
 anchor_left = 0.5
 anchor_right = 0.5
@@ -278,12 +279,12 @@ offset_bottom = -49.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Name" type="HBoxContainer" parent="KickMessage/VBoxContainer"]
+[node name="Name" type="HBoxContainer" parent="KickMessage/VBoxContainer" unique_id=617264090]
 layout_mode = 2
 size_flags_horizontal = 4
 size_flags_vertical = 6
 
-[node name="Label" type="Label" parent="KickMessage/VBoxContainer/Name"]
+[node name="Label" type="Label" parent="KickMessage/VBoxContainer/Name" unique_id=142744026]
 custom_minimum_size = Vector2(550, 0)
 layout_mode = 2
 text = "You were disconnected with reason:

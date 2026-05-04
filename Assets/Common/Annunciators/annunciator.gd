@@ -10,7 +10,7 @@ enum AnnunciatorState {
 var active_annunciator_on := false
 var clear_annunciator_on := false
 
-var alarm_dict: Dictionary = Network.alarm_last_update
+var alarm_dict: Dictionary = Network.device_last_update
 
 var alarm_node = "Alarm1/"
 
@@ -26,7 +26,7 @@ func _ready():
 		if not alarm_node is CSGBox3D:
 				alarm_node = alarm_node.get_node("CSGBox3D")
 		alarm_node.material = alarm_node.material.duplicate()
-	set_process(true)
+	#set_process(true)
 
 func _process(delta):
 	var new_active_annunciator_on := Engine.get_physics_frames() % 12 > 6

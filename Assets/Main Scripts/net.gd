@@ -1,8 +1,10 @@
 extends Node
 
+const REC = preload("res://Assets/Generated/Protocols/rec.gd")
+
 func _dprint(what):
-	if Engine.get_physics_frames() % 60 == 0:
-		print(what)
+	if Engine.get_process_frames() % 60 == 0:
+		push_warning("DEBUG: ", what)
 
 signal connecting()
 signal begin_login()
@@ -41,7 +43,9 @@ var device_last_update: Dictionary = {}
 # keys are int, values are boolean
 var _client_updated_devices: Dictionary = {}
 
-func register_device(id: int, device_path: NodePath) -> void:
+func register_device(name: StringName, device_path: NodePath) -> void:
+	return
+	var id := 0 # TODO: SOMETHING HERE!
 	devices[id] = device_path
 	var last_update = get_device_state(id)
 	get_node(device_path).net_update(last_update)
@@ -115,8 +119,10 @@ var rec_socket: StreamPeerTCP = StreamPeerTCP.new()
 var ubc_socket: PacketPeerUDP = PacketPeerUDP.new()
 var uec_socket: PacketPeerUDP = PacketPeerUDP.new()
 
-func connect_async(host, port := 7001):
-	print(rec_socket.connect_to_host(host, port))
+func connect_async(host, port := 1312):
+	if rec_socket.connect_to_host(host, port+1) != Error.OK:
+		print("shit went wrong!")
+		return
 	current_state = State.CONNECTING
 	connecting.emit()
 
@@ -142,88 +148,64 @@ func _on_login():
 	
 	pass
 
+func _gen_rec_header(packet: REC.RECMessage) -> REC.Header:
+	var header := packet.new_header()
+	header.set_magic_number(0x1312)
+	header.set_protocol_version(0)
+	header.set_flags(0)
+	return header
+
 func _on_connecting():
+	var packet := REC.RECMessage.new()
+	_gen_rec_header(packet)
+	var handshake := packet.new_handshake()
+	var capabilities := handshake.new_capabilities()
+	capabilities.clear_supported_features()
+	capabilities.clear_supported_environments()
+	handshake.set_client_major_version(2)
+	handshake.set_client_minor_version(0)
+	handshake.set_verification(0)
+	handshake.set_username(username)
+	
+	rec_socket.put_data(packet.to_bytes())
 	set_process(true)
 	pass
 
-func _gen_dec_common_header(decoder: PacketDecoder) -> Callable:
-	return decoder.dec_submsg.bind({
-		1: decoder.dec_u32,
-		2: decoder.dec_vu32,
-		3: decoder.dec_vu32,
-	})
 
-enum RECMessageType {
-	REC_UNKNOWN = 0,
-	REC_HANDSHAKE = 1,
-	REC_HANDSHAKE_ACK = 2,
-	REC_REGISTER_SESSION = 3,
-	REC_SESSION_CLOSE = 4,
-	REC_ACK_ONLY = 5,
-	REC_EVENT = 6,
-	REC_INTERACTION = 7,
-	REC_INTERACTION_ACK = 8,
-}
-enum RECCloseReason {
-	UNKNOWN = 0,
-	TIMEOUT = 1,
-	VERSION_MISMATCH = 2,
-	VERIFICATION_FAILED = 3,
-	INCOMPATIBLE_FEATURES = 4,
-	PROTOCOL_ERROR = 5,
-	DISCONNECTED = 6,
-	SERVER_SHUTDOWN = 7,
-}
+func _process_rec_connecting(packet: REC.RECMessage) -> void:
+	match packet.get_type():
+		REC.RECMessageType.REC_HANDSHAKE_ACK:
+			current_state = State.CONNECTED
+		REC.RECMessageType.REC_SESSION_CLOSE:
+			current_state = State.DISCONNECTING
+			disconnected.emit()
+			print("disconnected by server: %s" % packet.get_session_close().get_msg())
+		var x:
+			net_disconnect("invalid REC message type for state %s: %s" % [current_state, x])
+	pass
 
 
-func _gen_map(a: Callable, b: Callable) -> Callable:
-	return func(v, prev):
-		v = a.call(v, null)
-		return b.call(v, prev)
-
-func _read_packets():
+func _read_packets(process_rec: Callable):
 	while rec_socket.get_available_bytes() > 0:
-		var decoder = PacketDecoder.new(rec_socket.get_data(rec_socket.get_available_bytes()))
-		var packet = decoder.pop_message({
-			1: _gen_dec_common_header(decoder), #dose.proto.common.Header header = 1;
-			2: _gen_map(decoder.dec_u64, func (v, prev = null): v as RECMessageType), #RECMessageType type = 2;
-			#oneof payload {
-			4: decoder.dec_submsg.bind({ #RECHandshakeAck handshake_ack = 4;
-				#message RECHandshakeAck {
-				1: decoder.dec_vu32, #uint32 session_id = 1;
-				2: decoder.dec_vu32, #uint32 server_tick = 2;
-				3: decoder.dec_vu32, #uint32 server_time = 2;
-				#}
-			}),
-			6: decoder.dec_submsg.bind({ #RECSessionClose session_close = 6;
-				#message RECSessionClose {
-				1: _gen_map(decoder.dec_u64, func(v, prev = null): v as RECCloseReason), #Reason reason = 1;
-				2: decoder.dec_string, #string message = 2;
-				#}
-			}),
-			7: decoder.dec_submsg.bind({ #RECEvent event = 7;
-				#message RECEvent {
-
-				#}
-			}),
-			#}
-		})
+		var packet := REC.RECMessage.new()
+		var data := rec_socket.get_data(rec_socket.get_available_bytes())
+		packet.from_bytes(data)
 		
-		if packet[1][1] != 0x1312:
+		print(packet.to_string())
+		
+		if packet.get_header().get_magic_number() != 0x1312:
 			return net_disconnect("invalid packet header")
-		var proto_version = packet[1][2]
-		# what's 'version 1.0' represented as???
-		var flags = packet[1][3]
-		# no clue how to decode this, keep as-is i suppose
 		
+		process_rec.call(packet)
 
 func _process(delta):
 	_dprint("")
 	_dprint(current_state)
-	_read_packets()
+	var process_rec
 	match current_state:
 		State.CONNECTING:
-			_process_connecting(delta)
+			process_rec = _process_rec_connecting
+	_read_packets(process_rec)
 
 func _ready():
 	connecting.connect(_on_connecting)

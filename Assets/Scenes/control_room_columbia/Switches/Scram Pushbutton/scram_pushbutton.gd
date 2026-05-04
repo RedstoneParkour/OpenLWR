@@ -7,7 +7,7 @@ func _ready():
 	if id == &"":
 		id = StringName(name)
 		push_warning("id property of button is empty, using node name %s" % id)
-	Network.register_button(id, get_path())
+	Network.register_device(id, get_path())
 	player.unclick_left.connect(button_state_change.bind(false))
 	
 

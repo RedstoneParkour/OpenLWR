@@ -9,7 +9,7 @@ func _ready():
 	if id == &"":
 		id = StringName(name)
 		push_warning("id property of armable switch is empty, using node name %s" % id)
-	Network.register_button(id, get_path())
+	Network.register_device(id, get_path())
 	pass
 	
 func animate_armed(armed:bool):

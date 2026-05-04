@@ -867,4 +867,4 @@ func _ready():
 		if info:
 			scale_min = info["min_value"]
 			scale_max = info["max_value"]
-	Network.register_gauge(id, get_path())
+	Network.register_device(id, get_path())

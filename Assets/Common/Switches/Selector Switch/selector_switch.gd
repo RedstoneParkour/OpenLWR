@@ -88,7 +88,7 @@ func _ready():
 	if rotate_opposite == RotateOpposite.UNSPECIFIED:
 		rotate_opposite = RotateOpposite.YES if has_node("rotate_opposite") else RotateOpposite.NO
 		push_warning("rotate_opposite property of switch %s left unspecified, using node check" % id)
-	Network.register_switch(id, self.get_path())
+	Network.register_device(id, self.get_path())
 	player.unclick_left.connect(switch_unclick)
 
 func switch_update(info: Dictionary):

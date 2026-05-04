@@ -8,7 +8,7 @@ func _ready():
 	if id == &"":
 		id = StringName(alarm_group)
 		push_warning("id property of alarm group is empty, using group name %s" % alarm_group)
-	Network.register_group(id, get_path())
+	Network.register_device(id, get_path())
 
 
 func group_update(info):
