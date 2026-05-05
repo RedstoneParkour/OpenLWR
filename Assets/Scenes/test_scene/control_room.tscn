@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://d1voufvibxvu4"]
+[gd_scene format=3 uid="uid://d1voufvibxvu4"]
 
 [ext_resource type="Script" uid="uid://770yufug48hf" path="res://Assets/Scenes/test_scene/main.gd" id="1_1jahg"]
 [ext_resource type="PackedScene" uid="uid://7gv6q50fuutj" path="res://Assets/Scenes/Player/player.tscn" id="2_7sxx2"]
@@ -34,52 +34,51 @@ refraction_enabled = true
 [sub_resource type="BoxShape3D" id="BoxShape3D_giu2e"]
 size = Vector3(0.0144663, 0.0430282, 0.0426735)
 
-[node name="Node3D" type="Node3D"]
+[node name="Node3D" type="Node3D" unique_id=614352495]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.000860214, -0.00277793, 0.000972271)
 script = ExtResource("1_1jahg")
 
-[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1742929839]
 environment = SubResource("Environment_qd5ya")
 
-[node name="CSGBox3D" type="CSGBox3D" parent="."]
+[node name="CSGBox3D" type="CSGBox3D" parent="." unique_id=440839490]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0127487, 2.48194, 0.0338306)
 use_collision = true
 flip_faces = true
 size = Vector3(10, 5, 10)
 
-[node name="ReflectionProbe" type="ReflectionProbe" parent="CSGBox3D"]
+[node name="ReflectionProbe" type="ReflectionProbe" parent="CSGBox3D" unique_id=146977723]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -4.57742)
 size = Vector3(20, 20, 23.494)
 
-[node name="Player" parent="." instance=ExtResource("2_7sxx2")]
+[node name="Player" parent="." unique_id=1451156370 instance=ExtResource("2_7sxx2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.06602, 0)
 
-[node name="Panel" type="MeshInstance3D" parent="."]
+[node name="Panel" type="MeshInstance3D" parent="." unique_id=123107381]
 transform = Transform3D(0.146745, 0, 0, 0, 0.02532, 0, 0, 0, 0.02532, -3.03419, -0.018195, -4.28669)
 material_override = ExtResource("3_dnypx")
 mesh = ExtResource("4_3dw1b")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Panel"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Panel" unique_id=1792914473]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Panel/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Panel/StaticBody3D" unique_id=183016639]
 shape = SubResource("ConcavePolygonShape3D_emsru")
 
-[node name="OmniLight3D" type="OmniLight3D" parent="."]
+[node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1386898107]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.01869, 4.27658, -1.19061)
 light_energy = 1.086
 omni_range = 14.003
 
-[node name="OmniLight3D2" type="OmniLight3D" parent="."]
+[node name="OmniLight3D2" type="OmniLight3D" parent="." unique_id=2070723826]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.02648, 4.28278, -1.19124)
 light_energy = 1.086
 omni_range = 14.003
 
-[node name="test_gauge" parent="." instance=ExtResource("5_7joh0")]
+[node name="test_gauge" parent="." unique_id=1856438659 instance=ExtResource("5_7joh0")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.59784, -3.51043)
 
-[node name="test_switch2" parent="." instance=ExtResource("6_ngchh")]
+[node name="test_switch2" parent="." unique_id=830020117 instance=ExtResource("6_ngchh")]
 transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 1.39593, -3.36214)
-id = "test_switch2"
 
 [node name="selector_switch" parent="test_switch2" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
@@ -91,15 +90,21 @@ material_override = null
 transform = Transform3D(1, 0, 0, 0, -3.57628e-07, -1, 0, 1, -3.57628e-07, 0, 0, -4.88111e-05)
 material_override = null
 
-[node name="test_switch" parent="." instance=ExtResource("7_ca6tt")]
+[node name="test_switch" parent="." unique_id=1914032633 instance=ExtResource("7_ca6tt")]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 1.33125, -3.36239)
-id = "test_switch"
+netname = &"LPCS_Pump"
+switch_positions = {
+0: -45.0,
+1: 0.0,
+2: 45.0
+}
+rotate_opposite = 0
 
-[node name="indicator" type="CSGBox3D" parent="."]
+[node name="indicator" type="CSGBox3D" parent="." unique_id=389897262]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.36062, 0.920411, 0)
 material = SubResource("StandardMaterial3D_gninv")
 
-[node name="Box1" parent="." instance=ExtResource("8_wllca")]
+[node name="Box1" parent="." unique_id=1833733827 instance=ExtResource("8_wllca")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.797207, 1.96649, -3.38308)
 script = ExtResource("9_0yiso")
 
@@ -107,29 +112,29 @@ script = ExtResource("9_0yiso")
 text = "TEST
 ANNUNCIATOR"
 
-[node name="Timer" type="Timer" parent="."]
+[node name="Timer" type="Timer" parent="." unique_id=500052381]
 wait_time = 0.1
 
-[node name="Alarm1" type="Node3D" parent="."]
+[node name="Alarm1" type="Node3D" parent="." unique_id=1821621959]
 
-[node name="Fast" type="AudioStreamPlayer" parent="Alarm1"]
+[node name="Fast" type="AudioStreamPlayer" parent="Alarm1" unique_id=1881898220]
 stream = ExtResource("10_5wjjd")
 
-[node name="Slow" type="AudioStreamPlayer" parent="Alarm1"]
+[node name="Slow" type="AudioStreamPlayer" parent="Alarm1" unique_id=1818218166]
 stream = ExtResource("11_v8rg4")
 
-[node name="Annunciators" type="Node3D" parent="."]
+[node name="Annunciators" type="Node3D" parent="." unique_id=392580775]
 script = ExtResource("9_0yiso")
 
-[node name="test_button" type="CSGBox3D" parent="Annunciators"]
+[node name="test_button" type="CSGBox3D" parent="Annunciators" unique_id=1044864339]
 transform = Transform3D(-4.37114e-08, 0, 1, 0, 1, 0, -1, 0, -4.37114e-08, -5.96046e-08, 1.0623, -3.37413)
 use_collision = true
 size = Vector3(0.002, 0.042, 0.042)
 material = SubResource("StandardMaterial3D_v6fy7")
 
-[node name="StaticBody3D" type="StaticBody3D" parent="Annunciators/test_button"]
+[node name="StaticBody3D" type="StaticBody3D" parent="Annunciators/test_button" unique_id=930305341]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Annunciators/test_button/StaticBody3D"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Annunciators/test_button/StaticBody3D" unique_id=1801397353]
 shape = SubResource("BoxShape3D_giu2e")
 
 [connection signal="input_event" from="Annunciators/test_button/StaticBody3D" to="Annunciators/test_button" method="switch_click"]

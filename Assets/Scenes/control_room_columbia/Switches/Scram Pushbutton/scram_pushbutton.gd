@@ -1,12 +1,14 @@
 extends CSGCylinder3D
 
-@export var id: StringName
+@export var netname: StringName
+var id: int
 @onready var player := self.get_node("/root/Node3D/Player")
 
 func _ready():
-	if id == &"":
-		id = StringName(name)
-		push_warning("id property of button is empty, using node name %s" % id)
+	if netname == &"":
+		netname = StringName(name)
+		push_warning("netname property of button is empty, using node name %s" % netname)
+	id = Network.name_to_id(netname)
 	Network.register_device(id, get_path())
 	player.unclick_left.connect(button_state_change.bind(false))
 	
@@ -16,7 +18,8 @@ func button_state_change(state: bool, update_server: bool = true):
 		var info = {
 			state = state
 		}
-		Network.client_update_button(id, info)
+		push_warning("button press eaten!")
+		#Network.client_update_button(id, info)
 	pass
 	# TODO: button audio
 

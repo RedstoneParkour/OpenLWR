@@ -1,7 +1,8 @@
 
 extends Node3D
 
-@export var id: StringName
+@export var netname: StringName
+var id: int
 
 enum SwitchFlag {
 	GREEN,
@@ -15,11 +16,11 @@ enum RotateOpposite {
 }
 
 @onready var player = $"/root/Node3D/Player"
-var switch_position: int
-var switch_positions: Dictionary
+var switch_position: int = 0
+@export var switch_positions: Dictionary
 var switch_flag: SwitchFlag
 var switch_local_push: bool = false
-var switch_momentary: bool
+@export var switch_momentary: bool = false
 @export var rotate_opposite: RotateOpposite = RotateOpposite.UNSPECIFIED
 @onready var has_flag = get_node_or_null("selector_switch/Flag")
 var flag_green = null
@@ -54,17 +55,17 @@ var light_nodes: Dictionary = {}
 		#
 	#switch_position_change(switch["position"],true)
 
-func _find_light_node(id: StringName):
-	if light_nodes.has(id):
-		return light_nodes[id]
+func _find_light_node(netname: StringName):
+	if light_nodes.has(netname):
+		return light_nodes[netname]
 	var node
-	if id == &"green" or id == &"red":
-		node = get_node(id+"/Lamp")
+	if netname == &"green" or netname == &"red":
+		node = get_node(netname+"/Lamp")
 	else:
-		node = get_node(NodePath(id))
+		node = get_node(NodePath(netname))
 	if node:
 		node.material = node.material.duplicate()
-	light_nodes[id] = node
+	light_nodes[netname] = node
 	return node
 
 func _flag_to_string(flag: SwitchFlag):
@@ -82,14 +83,16 @@ func _string_to_flag(flag: String):
 			return SwitchFlag.RED
 
 func _ready():
-	if id == &"":
-		id = StringName(name)
-		push_warning("id property of selector switch is empty, using node name %s" % id)
+	if netname == &"":
+		netname = StringName(name)
+		push_warning("netname property of selector switch is empty, using node name %s" % netname)
 	if rotate_opposite == RotateOpposite.UNSPECIFIED:
 		rotate_opposite = RotateOpposite.YES if has_node("rotate_opposite") else RotateOpposite.NO
-		push_warning("rotate_opposite property of switch %s left unspecified, using node check" % id)
+		push_warning("rotate_opposite property of switch %s left unspecified, using node check" % netname)
+	id = Network.name_to_id(netname)
 	Network.register_device(id, self.get_path())
 	player.unclick_left.connect(switch_unclick)
+	switch_model_update(true)
 
 func switch_update(info: Dictionary):
 	if "lights" in info:
@@ -105,7 +108,7 @@ func switch_update(info: Dictionary):
 	switch_model_update()
 
 func switch_model_update(nosound: bool = false):
-	var rotate_position = switch_positions.get(str(switch_position), 0)
+	var rotate_position = switch_positions.get(switch_position, 0)
 	var handle_rotation = round($"selector_switch/Handle".rotation_degrees.y)
 	
 	# used in the case where a switch was modeled such that it needs to be rotated the opposite direction
@@ -128,16 +131,17 @@ func _client_switch_position_change(to_position: int, no_sound: bool = false):
 	switch_flag = SwitchFlag.RED if to_position >= 0 else SwitchFlag.GREEN
 	switch_position = to_position
 	switch_model_update(no_sound)
-	var new_info = {
-		position = switch_position,
-		flag = _flag_to_string(switch_flag),
-	}
-	Network.client_update_switch(id, new_info)
+	
+	const UBC = preload("res://Assets/Generated/Protocols/ubc.gd")
+	var update_data = UBC.UBCMessage.Payload.Data.new()
+	update_data.set_field(0)
+	update_data.set_int_value(switch_position)
+	Network.client_update(id, 0, update_data.to_bytes())
 
 func switch_click_left(_camera, event, _position, _normal, _shape_idx):
 	var mouse_click = event as InputEventMouseButton
 	if mouse_click and mouse_click.button_index == 1:
-		if mouse_click.pressed and (str(switch_position+1) in switch_positions):
+		if mouse_click.pressed and (switch_position+1 in switch_positions):
 			print("swotch")
 			switch_local_push = true
 			_client_switch_position_change(switch_position+1)
@@ -146,7 +150,7 @@ func switch_click_left(_camera, event, _position, _normal, _shape_idx):
 func switch_click_right(_camera, event, _position, _normal, _shape_idx):
 	var mouse_click = event as InputEventMouseButton
 	if mouse_click and mouse_click.button_index == 1:
-		if mouse_click.pressed and (str(switch_position-1) in switch_positions):
+		if mouse_click.pressed and (switch_position-1 in switch_positions):
 			switch_local_push = true
 			_client_switch_position_change(switch_position-1)
 			

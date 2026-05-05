@@ -1,6 +1,7 @@
 extends Node3D
 
-@export var id: StringName
+@export var netname: StringName
+var id: int
 
 @onready var player = $"/root/Node3D/Player"
 var button_state: bool
@@ -8,9 +9,10 @@ var button_armed: bool
 var button_local_push: bool
 
 func _ready():
-	if id == &"":
-		id = StringName(name)
-		push_warning("id property of button is empty, using node name %s" % id)
+	if netname == &"":
+		netname = StringName(name)
+		push_warning("netname property of button is empty, using node name %s" % netname)
+	id = Network.name_to_id(netname)
 	Network.register_device(id, get_path())
 	player.unclick_left.connect(un_click)
 
@@ -31,7 +33,8 @@ func _client_button_update():
 		armed = button_armed,
 	}
 
-	Network.client_update_button(id, info)
+	push_warning("button press eaten!")
+	#Network.client_update_button(id, info)
 
 func button_update(info):
 	if "state" in info:

@@ -1,6 +1,7 @@
 extends Node3D
 
-@export var id: StringName
+@export var netname: StringName
+var id: int
 
 @export var scale_min: float = -1.0
 @export var scale_max: float = 1.0
@@ -859,12 +860,13 @@ func gauge_update(value):
 	set_gauge_value(value, scale_min, scale_max)
 
 func _ready():
-	if id == &"":
-		id = StringName(name)
-		push_warning("id property of button is empty, using node name %s" % id)
+	if netname == &"":
+		netname = StringName(name)
+		push_warning("netname property of button is empty, using node name %s" % netname)
 	if not override_info_dict:
-		var info = gauges.get(id)
+		var info = gauges.get(netname)
 		if info:
 			scale_min = info["min_value"]
 			scale_max = info["max_value"]
+	id = Network.name_to_id(netname)
 	Network.register_device(id, get_path())

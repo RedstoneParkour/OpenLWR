@@ -35,7 +35,7 @@ var queued_chat_messages: Array[String] = ["test"]
 var inbound_packet_queue: Array[Dictionary] = []
 
 # keys are int, values are NodePath
-var devices: Dictionary = {}
+var devices: Dictionary[int, NodePath] = {}
 
 # keys are int, values vary
 var device_last_update: Dictionary = {}
@@ -43,12 +43,16 @@ var device_last_update: Dictionary = {}
 # keys are int, values are boolean
 var _client_updated_devices: Dictionary = {}
 
-func register_device(name: StringName, device_path: NodePath) -> void:
-	return
-	var id := 0 # TODO: SOMETHING HERE!
+func name_to_id(netname: StringName) -> int:
+	var h = netname.sha256_buffer()
+	#h = h.slice(0,8)
+	h.reverse() # seems OLWR-server decodes it in the reverse endian lmao
+	return h.decode_u64(0) #this should work (i hope)
+
+func register_device(id: int, device_path: NodePath) -> void:
 	devices[id] = device_path
 	var last_update = get_device_state(id)
-	get_node(device_path).net_update(last_update)
+	#get_node(device_path).net_update(last_update)
 
 func unregister_device(id: int) -> bool:
 	return devices.erase(id)
@@ -67,6 +71,24 @@ func _read_device_data(id: int, buf: PackedByteArray) -> Array:
 		return get_node(devices[id]).net_read(buf)
 	return [null, buf] # pass it through?
 
+# map from interaction id to device id
+var outbound_interactions: Dictionary[int, int] = {}
+var next_interaction_id := 0
+
+func client_update(id: int, type: int, data: PackedByteArray = PackedByteArray()) -> void:
+	var interaction_id := next_interaction_id
+	next_interaction_id += 1
+	var packet := REC.RECMessage.new()
+	_gen_rec_header(packet)
+	var interaction = packet.new_interaction()
+	packet.set_type(REC.RECMessageType.REC_INTERACTION)
+
+	interaction.set_interaction_id(interaction_id)
+	interaction.set_target_device(id)
+	interaction.set_interaction_type(type)
+	interaction.set_data(data)
+
+	rec_socket.put_data(packet.to_bytes())
 
 var players: Dictionary = {}
 
@@ -127,7 +149,8 @@ func connect_async(host, port := 1312):
 	connecting.emit()
 
 func net_disconnect(reason: String, code: int = 1000):
-	rec_socket.close(code, reason)
+	print(code, reason)
+	rec_socket.disconnect_from_host()
 	current_state = State.DISCONNECTING
 
 func _process_connecting(delta):
@@ -139,43 +162,43 @@ func _on_ready():
 	pass
 
 func _on_login():
-	var login_parameters = {
-		username = username,
-		version = version,
-		}
-
-	var data = JSON.stringify(login_parameters)
+	var packet := REC.RECMessage.new()
+	_gen_rec_header(packet)
+	var handshake := packet.new_handshake()
+	packet.set_type(REC.RECMessageType.REC_HANDSHAKE)
+	var capabilities := handshake.new_capabilities()
+	capabilities.clear_supported_features()
+	capabilities.clear_supported_environments()
+	handshake.set_client_major_version(1)
+	handshake.set_client_minor_version(0)
+	handshake.set_verification(0)
+	handshake.set_username(username)
+	
+	print("sending login packet")
+	rec_socket.put_data(packet.to_bytes())
 	
 	pass
 
 func _gen_rec_header(packet: REC.RECMessage) -> REC.Header:
 	var header := packet.new_header()
 	header.set_magic_number(0x1312)
-	header.set_protocol_version(0)
-	header.set_flags(0)
+	header.set_protocol_version(1)
+	header.set_flags(1)
 	return header
 
 func _on_connecting():
-	var packet := REC.RECMessage.new()
-	_gen_rec_header(packet)
-	var handshake := packet.new_handshake()
-	var capabilities := handshake.new_capabilities()
-	capabilities.clear_supported_features()
-	capabilities.clear_supported_environments()
-	handshake.set_client_major_version(2)
-	handshake.set_client_minor_version(0)
-	handshake.set_verification(0)
-	handshake.set_username(username)
-	
-	rec_socket.put_data(packet.to_bytes())
 	set_process(true)
 	pass
 
+func _on_connected():
+	print("login complete!")
+	pass
 
-func _process_rec_connecting(packet: REC.RECMessage) -> void:
+func _process_rec_login(packet: REC.RECMessage) -> void:
 	match packet.get_type():
 		REC.RECMessageType.REC_HANDSHAKE_ACK:
 			current_state = State.CONNECTED
+			connected.emit()
 		REC.RECMessageType.REC_SESSION_CLOSE:
 			current_state = State.DISCONNECTING
 			disconnected.emit()
@@ -186,13 +209,19 @@ func _process_rec_connecting(packet: REC.RECMessage) -> void:
 
 
 func _read_packets(process_rec: Callable):
+	if rec_socket.poll() != Error.OK:
+		current_state = State.DISCONNECTING
+		disconnected.emit()
+		return
 	while rec_socket.get_available_bytes() > 0:
 		var packet := REC.RECMessage.new()
-		var data := rec_socket.get_data(rec_socket.get_available_bytes())
+		var data: PackedByteArray = rec_socket.get_data(rec_socket.get_available_bytes())[1]
 		packet.from_bytes(data)
 		
 		print(packet.to_string())
 		
+		if not packet.has_header():
+			return net_disconnect("no packet header!")
 		if packet.get_header().get_magic_number() != 0x1312:
 			return net_disconnect("invalid packet header")
 		
@@ -201,16 +230,24 @@ func _read_packets(process_rec: Callable):
 func _process(delta):
 	_dprint("")
 	_dprint(current_state)
-	var process_rec
 	match current_state:
 		State.CONNECTING:
-			process_rec = _process_rec_connecting
-	_read_packets(process_rec)
+			if rec_socket.poll() != Error.OK:
+				print("disconnected!")
+				current_state = State.DISCONNECTING
+				disconnected.emit()
+			if rec_socket.get_status() == StreamPeerSocket.STATUS_CONNECTED:
+				print("connected!")
+				current_state = State.LOGIN
+				begin_login.emit()
+		State.LOGIN:
+			_read_packets(_process_rec_login)
 
 func _ready():
 	connecting.connect(_on_connecting)
 	begin_login.connect(_on_login)
 	disconnected.connect(_on_ready)
+	connected.connect(_on_connected)
 	_on_ready()
 	var arguments = _parse_arguments()
 	var djoin_ip = "127.0.0.1:7001"
@@ -221,3 +258,6 @@ func _ready():
 			djoin_ip = arguments.join
 		connect_async(djoin_ip)
 	pass
+
+func _exit_tree() -> void:
+	rec_socket.disconnect_from_host()

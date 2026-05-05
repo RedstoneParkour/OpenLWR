@@ -1,14 +1,16 @@
 extends Node3D
 
-@export var id: StringName
+@export var netname: StringName
+var id: int
 
 var button_state: bool = false
 var button_armed: bool = false
 
 func _ready():
-	if id == &"":
-		id = StringName(name)
-		push_warning("id property of armable switch is empty, using node name %s" % id)
+	if netname == &"":
+		netname = StringName(name)
+		push_warning("netname property of armable switch is empty, using node name %s" % netname)
+	id = Network.name_to_id(netname)
 	Network.register_device(id, get_path())
 	pass
 	
@@ -23,7 +25,8 @@ func _update_server():
 		state = button_state,
 		armed = button_armed,
 	}
-	Network.client_update_button(id, info)
+	push_warning("switch press eaten!")
+	#Network.client_update_button(id, info)
 
 func button_arm_change(to_position: bool, update_server: bool = true):
 	button_armed = to_position
