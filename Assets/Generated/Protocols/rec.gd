@@ -707,31 +707,43 @@ class RECMessage:
 		service.func_ref = Callable(self, "new_handshake_ack")
 		data[__handshake_ack.tag] = service
 		
-		__register_session = PBField.new("register_session", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 5, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
+		__server_info_request = PBField.new("server_info_request", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 5, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
+		service = PBServiceField.new()
+		service.field = __server_info_request
+		service.func_ref = Callable(self, "new_server_info_request")
+		data[__server_info_request.tag] = service
+		
+		__server_info = PBField.new("server_info", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 6, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
+		service = PBServiceField.new()
+		service.field = __server_info
+		service.func_ref = Callable(self, "new_server_info")
+		data[__server_info.tag] = service
+		
+		__register_session = PBField.new("register_session", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 7, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
 		service = PBServiceField.new()
 		service.field = __register_session
 		service.func_ref = Callable(self, "new_register_session")
 		data[__register_session.tag] = service
 		
-		__session_close = PBField.new("session_close", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 6, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
+		__session_close = PBField.new("session_close", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 8, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
 		service = PBServiceField.new()
 		service.field = __session_close
 		service.func_ref = Callable(self, "new_session_close")
 		data[__session_close.tag] = service
 		
-		__event = PBField.new("event", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 7, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
+		__event = PBField.new("event", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 9, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
 		service = PBServiceField.new()
 		service.field = __event
 		service.func_ref = Callable(self, "new_event")
 		data[__event.tag] = service
 		
-		__interaction = PBField.new("interaction", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 8, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
+		__interaction = PBField.new("interaction", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 10, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
 		service = PBServiceField.new()
 		service.field = __interaction
 		service.func_ref = Callable(self, "new_interaction")
 		data[__interaction.tag] = service
 		
-		__interaction_ack = PBField.new("interaction_ack", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 9, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
+		__interaction_ack = PBField.new("interaction_ack", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 11, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
 		service = PBServiceField.new()
 		service.field = __interaction_ack
 		service.func_ref = Callable(self, "new_interaction_ack")
@@ -743,11 +755,13 @@ class RECMessage:
 		PAYLOAD_NOT_SET = 0,
 		HANDSHAKE = 3,
 		HANDSHAKE_ACK = 4,
-		REGISTER_SESSION = 5,
-		SESSION_CLOSE = 6,
-		EVENT = 7,
-		INTERACTION = 8,
-		INTERACTION_ACK = 9,
+		SERVER_INFO_REQUEST = 5,
+		SERVER_INFO = 6,
+		REGISTER_SESSION = 7,
+		SESSION_CLOSE = 8,
+		EVENT = 9,
+		INTERACTION = 10,
+		INTERACTION_ACK = 11,
 	}
 	var _payload_case: int = 0
 
@@ -791,16 +805,20 @@ class RECMessage:
 		_payload_case = 3
 		__handshake_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[4].state = PB_SERVICE_STATE.UNFILLED
-		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[5].state = PB_SERVICE_STATE.UNFILLED
-		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[6].state = PB_SERVICE_STATE.UNFILLED
-		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[7].state = PB_SERVICE_STATE.UNFILLED
-		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[8].state = PB_SERVICE_STATE.UNFILLED
-		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[9].state = PB_SERVICE_STATE.UNFILLED
+		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[10].state = PB_SERVICE_STATE.UNFILLED
+		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[11].state = PB_SERVICE_STATE.UNFILLED
 		__handshake.value = RECHandshake.new()
 		return __handshake.value
 	
@@ -817,146 +835,230 @@ class RECMessage:
 		data[3].state = PB_SERVICE_STATE.UNFILLED
 		data[4].state = PB_SERVICE_STATE.FILLED
 		_payload_case = 4
-		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[5].state = PB_SERVICE_STATE.UNFILLED
-		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[6].state = PB_SERVICE_STATE.UNFILLED
-		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[7].state = PB_SERVICE_STATE.UNFILLED
-		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[8].state = PB_SERVICE_STATE.UNFILLED
-		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[9].state = PB_SERVICE_STATE.UNFILLED
+		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[10].state = PB_SERVICE_STATE.UNFILLED
+		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[11].state = PB_SERVICE_STATE.UNFILLED
 		__handshake_ack.value = RECHandshakeAck.new()
 		return __handshake_ack.value
 	
-	var __register_session: PBField
-	func has_register_session() -> bool:
+	var __server_info_request: PBField
+	func has_server_info_request() -> bool:
 		return data[5].state == PB_SERVICE_STATE.FILLED
-	func get_register_session() -> RECRegisterSession:
-		return __register_session.value
-	func clear_register_session() -> void:
+	func get_server_info_request() -> RECServerInfoRequest:
+		return __server_info_request.value
+	func clear_server_info_request() -> void:
 		data[5].state = PB_SERVICE_STATE.UNFILLED
-		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
-	func new_register_session() -> RECRegisterSession:
+		__server_info_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+	func new_server_info_request() -> RECServerInfoRequest:
 		__handshake.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[3].state = PB_SERVICE_STATE.UNFILLED
 		__handshake_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[4].state = PB_SERVICE_STATE.UNFILLED
 		data[5].state = PB_SERVICE_STATE.FILLED
 		_payload_case = 5
-		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[6].state = PB_SERVICE_STATE.UNFILLED
-		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[7].state = PB_SERVICE_STATE.UNFILLED
-		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[8].state = PB_SERVICE_STATE.UNFILLED
-		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[9].state = PB_SERVICE_STATE.UNFILLED
+		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[10].state = PB_SERVICE_STATE.UNFILLED
+		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[11].state = PB_SERVICE_STATE.UNFILLED
+		__server_info_request.value = RECServerInfoRequest.new()
+		return __server_info_request.value
+	
+	var __server_info: PBField
+	func has_server_info() -> bool:
+		return data[6].state == PB_SERVICE_STATE.FILLED
+	func get_server_info() -> RECServerInfo:
+		return __server_info.value
+	func clear_server_info() -> void:
+		data[6].state = PB_SERVICE_STATE.UNFILLED
+		__server_info.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+	func new_server_info() -> RECServerInfo:
+		__handshake.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[3].state = PB_SERVICE_STATE.UNFILLED
+		__handshake_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[4].state = PB_SERVICE_STATE.UNFILLED
+		__server_info_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[5].state = PB_SERVICE_STATE.UNFILLED
+		data[6].state = PB_SERVICE_STATE.FILLED
+		_payload_case = 6
+		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[7].state = PB_SERVICE_STATE.UNFILLED
+		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[8].state = PB_SERVICE_STATE.UNFILLED
+		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[9].state = PB_SERVICE_STATE.UNFILLED
+		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[10].state = PB_SERVICE_STATE.UNFILLED
+		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[11].state = PB_SERVICE_STATE.UNFILLED
+		__server_info.value = RECServerInfo.new()
+		return __server_info.value
+	
+	var __register_session: PBField
+	func has_register_session() -> bool:
+		return data[7].state == PB_SERVICE_STATE.FILLED
+	func get_register_session() -> RECRegisterSession:
+		return __register_session.value
+	func clear_register_session() -> void:
+		data[7].state = PB_SERVICE_STATE.UNFILLED
+		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+	func new_register_session() -> RECRegisterSession:
+		__handshake.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[3].state = PB_SERVICE_STATE.UNFILLED
+		__handshake_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[4].state = PB_SERVICE_STATE.UNFILLED
+		__server_info_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[5].state = PB_SERVICE_STATE.UNFILLED
+		__server_info.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[6].state = PB_SERVICE_STATE.UNFILLED
+		data[7].state = PB_SERVICE_STATE.FILLED
+		_payload_case = 7
+		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[8].state = PB_SERVICE_STATE.UNFILLED
+		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[9].state = PB_SERVICE_STATE.UNFILLED
+		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[10].state = PB_SERVICE_STATE.UNFILLED
+		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[11].state = PB_SERVICE_STATE.UNFILLED
 		__register_session.value = RECRegisterSession.new()
 		return __register_session.value
 	
 	var __session_close: PBField
 	func has_session_close() -> bool:
-		return data[6].state == PB_SERVICE_STATE.FILLED
+		return data[8].state == PB_SERVICE_STATE.FILLED
 	func get_session_close() -> RECSessionClose:
 		return __session_close.value
 	func clear_session_close() -> void:
-		data[6].state = PB_SERVICE_STATE.UNFILLED
+		data[8].state = PB_SERVICE_STATE.UNFILLED
 		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 	func new_session_close() -> RECSessionClose:
 		__handshake.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[3].state = PB_SERVICE_STATE.UNFILLED
 		__handshake_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[4].state = PB_SERVICE_STATE.UNFILLED
-		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[5].state = PB_SERVICE_STATE.UNFILLED
-		data[6].state = PB_SERVICE_STATE.FILLED
-		_payload_case = 6
-		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[6].state = PB_SERVICE_STATE.UNFILLED
+		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[7].state = PB_SERVICE_STATE.UNFILLED
-		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
-		data[8].state = PB_SERVICE_STATE.UNFILLED
-		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[8].state = PB_SERVICE_STATE.FILLED
+		_payload_case = 8
+		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[9].state = PB_SERVICE_STATE.UNFILLED
+		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[10].state = PB_SERVICE_STATE.UNFILLED
+		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[11].state = PB_SERVICE_STATE.UNFILLED
 		__session_close.value = RECSessionClose.new()
 		return __session_close.value
 	
 	var __event: PBField
 	func has_event() -> bool:
-		return data[7].state == PB_SERVICE_STATE.FILLED
+		return data[9].state == PB_SERVICE_STATE.FILLED
 	func get_event() -> RECEvent:
 		return __event.value
 	func clear_event() -> void:
-		data[7].state = PB_SERVICE_STATE.UNFILLED
+		data[9].state = PB_SERVICE_STATE.UNFILLED
 		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 	func new_event() -> RECEvent:
 		__handshake.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[3].state = PB_SERVICE_STATE.UNFILLED
 		__handshake_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[4].state = PB_SERVICE_STATE.UNFILLED
-		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[5].state = PB_SERVICE_STATE.UNFILLED
-		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[6].state = PB_SERVICE_STATE.UNFILLED
-		data[7].state = PB_SERVICE_STATE.FILLED
-		_payload_case = 7
-		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[7].state = PB_SERVICE_STATE.UNFILLED
+		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[8].state = PB_SERVICE_STATE.UNFILLED
+		data[9].state = PB_SERVICE_STATE.FILLED
+		_payload_case = 9
+		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[10].state = PB_SERVICE_STATE.UNFILLED
 		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
-		data[9].state = PB_SERVICE_STATE.UNFILLED
+		data[11].state = PB_SERVICE_STATE.UNFILLED
 		__event.value = RECEvent.new()
 		return __event.value
 	
 	var __interaction: PBField
 	func has_interaction() -> bool:
-		return data[8].state == PB_SERVICE_STATE.FILLED
+		return data[10].state == PB_SERVICE_STATE.FILLED
 	func get_interaction() -> RECInteraction:
 		return __interaction.value
 	func clear_interaction() -> void:
-		data[8].state = PB_SERVICE_STATE.UNFILLED
+		data[10].state = PB_SERVICE_STATE.UNFILLED
 		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 	func new_interaction() -> RECInteraction:
 		__handshake.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[3].state = PB_SERVICE_STATE.UNFILLED
 		__handshake_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[4].state = PB_SERVICE_STATE.UNFILLED
-		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[5].state = PB_SERVICE_STATE.UNFILLED
-		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[6].state = PB_SERVICE_STATE.UNFILLED
-		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[7].state = PB_SERVICE_STATE.UNFILLED
-		data[8].state = PB_SERVICE_STATE.FILLED
-		_payload_case = 8
-		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[8].state = PB_SERVICE_STATE.UNFILLED
+		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[9].state = PB_SERVICE_STATE.UNFILLED
+		data[10].state = PB_SERVICE_STATE.FILLED
+		_payload_case = 10
+		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[11].state = PB_SERVICE_STATE.UNFILLED
 		__interaction.value = RECInteraction.new()
 		return __interaction.value
 	
 	var __interaction_ack: PBField
 	func has_interaction_ack() -> bool:
-		return data[9].state == PB_SERVICE_STATE.FILLED
+		return data[11].state == PB_SERVICE_STATE.FILLED
 	func get_interaction_ack() -> RECInteractionAck:
 		return __interaction_ack.value
 	func clear_interaction_ack() -> void:
-		data[9].state = PB_SERVICE_STATE.UNFILLED
+		data[11].state = PB_SERVICE_STATE.UNFILLED
 		__interaction_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 	func new_interaction_ack() -> RECInteractionAck:
 		__handshake.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[3].state = PB_SERVICE_STATE.UNFILLED
 		__handshake_ack.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[4].state = PB_SERVICE_STATE.UNFILLED
-		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info_request.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[5].state = PB_SERVICE_STATE.UNFILLED
-		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__server_info.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[6].state = PB_SERVICE_STATE.UNFILLED
-		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__register_session.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[7].state = PB_SERVICE_STATE.UNFILLED
-		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		__session_close.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
 		data[8].state = PB_SERVICE_STATE.UNFILLED
-		data[9].state = PB_SERVICE_STATE.FILLED
-		_payload_case = 9
+		__event.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[9].state = PB_SERVICE_STATE.UNFILLED
+		__interaction.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+		data[10].state = PB_SERVICE_STATE.UNFILLED
+		data[11].state = PB_SERVICE_STATE.FILLED
+		_payload_case = 11
 		__interaction_ack.value = RECInteractionAck.new()
 		return __interaction_ack.value
 	
@@ -987,11 +1089,13 @@ enum RECMessageType {
 	REC_UNKNOWN = 0,
 	REC_HANDSHAKE = 1,
 	REC_HANDSHAKE_ACK = 2,
-	REC_REGISTER_SESSION = 3,
-	REC_SESSION_CLOSE = 4,
-	REC_EVENT = 6,
-	REC_INTERACTION = 7,
-	REC_INTERACTION_ACK = 8
+	REC_SERVER_INFO_REQUEST = 3,
+	REC_SERVER_INFO = 4,
+	REC_REGISTER_SESSION = 5,
+	REC_SESSION_CLOSE = 6,
+	REC_EVENT = 7,
+	REC_INTERACTION = 8,
+	REC_INTERACTION_ACK = 9
 }
 
 enum HandshakeVerification {
@@ -1674,6 +1778,257 @@ class RECInteractionAck:
 			return PB_ERR.PARSE_INCOMPLETE
 		return result
 	
+class RECServerInfoRequest:
+	func _init():
+		var service
+		
+	var data = {}
+	
+	func _to_string() -> String:
+		return PBPacker.message_to_string(data)
+		
+	func to_bytes() -> PackedByteArray:
+		return PBPacker.pack_message(data)
+		
+	func from_bytes(bytes : PackedByteArray, offset : int = 0, limit : int = -1) -> int:
+		var cur_limit = bytes.size()
+		if limit != -1:
+			cur_limit = limit
+		var result = PBPacker.unpack_message(data, bytes, offset, cur_limit)
+		if result == cur_limit:
+			if PBPacker.check_required(data):
+				if limit == -1:
+					return PB_ERR.NO_ERRORS
+			else:
+				return PB_ERR.REQUIRED_FIELDS
+		elif limit == -1 && result > 0:
+			return PB_ERR.PARSE_INCOMPLETE
+		return result
+	
+class RECServerInfo:
+	func _init():
+		var service
+		
+		__server_name = PBField.new("server_name", PB_DATA_TYPE.STRING, PB_RULE.OPTIONAL, 1, true, DEFAULT_VALUES_3[PB_DATA_TYPE.STRING])
+		service = PBServiceField.new()
+		service.field = __server_name
+		data[__server_name.tag] = service
+		
+		__server_version = PBField.new("server_version", PB_DATA_TYPE.STRING, PB_RULE.OPTIONAL, 2, true, DEFAULT_VALUES_3[PB_DATA_TYPE.STRING])
+		service = PBServiceField.new()
+		service.field = __server_version
+		data[__server_version.tag] = service
+		
+		__motd = PBField.new("motd", PB_DATA_TYPE.STRING, PB_RULE.OPTIONAL, 3, true, DEFAULT_VALUES_3[PB_DATA_TYPE.STRING])
+		service = PBServiceField.new()
+		service.field = __motd
+		data[__motd.tag] = service
+		
+		__max_sessions = PBField.new("max_sessions", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 4, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
+		service = PBServiceField.new()
+		service.field = __max_sessions
+		data[__max_sessions.tag] = service
+		
+		__current_sessions = PBField.new("current_sessions", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 5, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
+		service = PBServiceField.new()
+		service.field = __current_sessions
+		data[__current_sessions.tag] = service
+		
+		__server_capabilities = PBField.new("server_capabilities", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 6, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
+		service = PBServiceField.new()
+		service.field = __server_capabilities
+		service.func_ref = Callable(self, "new_server_capabilities")
+		data[__server_capabilities.tag] = service
+		
+	var data = {}
+	
+	var __server_name: PBField
+	func has_server_name() -> bool:
+		if __server_name.value != null:
+			return true
+		return false
+	func get_server_name() -> String:
+		return __server_name.value
+	func clear_server_name() -> void:
+		data[1].state = PB_SERVICE_STATE.UNFILLED
+		__server_name.value = DEFAULT_VALUES_3[PB_DATA_TYPE.STRING]
+	func set_server_name(value : String) -> void:
+		__server_name.value = value
+	
+	var __server_version: PBField
+	func has_server_version() -> bool:
+		if __server_version.value != null:
+			return true
+		return false
+	func get_server_version() -> String:
+		return __server_version.value
+	func clear_server_version() -> void:
+		data[2].state = PB_SERVICE_STATE.UNFILLED
+		__server_version.value = DEFAULT_VALUES_3[PB_DATA_TYPE.STRING]
+	func set_server_version(value : String) -> void:
+		__server_version.value = value
+	
+	var __motd: PBField
+	func has_motd() -> bool:
+		if __motd.value != null:
+			return true
+		return false
+	func get_motd() -> String:
+		return __motd.value
+	func clear_motd() -> void:
+		data[3].state = PB_SERVICE_STATE.UNFILLED
+		__motd.value = DEFAULT_VALUES_3[PB_DATA_TYPE.STRING]
+	func set_motd(value : String) -> void:
+		__motd.value = value
+	
+	var __max_sessions: PBField
+	func has_max_sessions() -> bool:
+		if __max_sessions.value != null:
+			return true
+		return false
+	func get_max_sessions() -> int:
+		return __max_sessions.value
+	func clear_max_sessions() -> void:
+		data[4].state = PB_SERVICE_STATE.UNFILLED
+		__max_sessions.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
+	func set_max_sessions(value : int) -> void:
+		__max_sessions.value = value
+	
+	var __current_sessions: PBField
+	func has_current_sessions() -> bool:
+		if __current_sessions.value != null:
+			return true
+		return false
+	func get_current_sessions() -> int:
+		return __current_sessions.value
+	func clear_current_sessions() -> void:
+		data[5].state = PB_SERVICE_STATE.UNFILLED
+		__current_sessions.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
+	func set_current_sessions(value : int) -> void:
+		__current_sessions.value = value
+	
+	var __server_capabilities: PBField
+	func has_server_capabilities() -> bool:
+		if __server_capabilities.value != null:
+			return true
+		return false
+	func get_server_capabilities() -> RECServerInfo.Capabilities:
+		return __server_capabilities.value
+	func clear_server_capabilities() -> void:
+		data[6].state = PB_SERVICE_STATE.UNFILLED
+		__server_capabilities.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+	func new_server_capabilities() -> RECServerInfo.Capabilities:
+		__server_capabilities.value = RECServerInfo.Capabilities.new()
+		return __server_capabilities.value
+	
+	class Capabilities:
+		func _init():
+			var service
+			
+			var __required_features_default: Array[String] = []
+			__required_features = PBField.new("required_features", PB_DATA_TYPE.STRING, PB_RULE.REPEATED, 1, true, __required_features_default)
+			service = PBServiceField.new()
+			service.field = __required_features
+			data[__required_features.tag] = service
+			
+			var __supported_features_default: Array[String] = []
+			__supported_features = PBField.new("supported_features", PB_DATA_TYPE.STRING, PB_RULE.REPEATED, 2, true, __supported_features_default)
+			service = PBServiceField.new()
+			service.field = __supported_features
+			data[__supported_features.tag] = service
+			
+			var __required_environments_default: Array[String] = []
+			__required_environments = PBField.new("required_environments", PB_DATA_TYPE.STRING, PB_RULE.REPEATED, 3, true, __required_environments_default)
+			service = PBServiceField.new()
+			service.field = __required_environments
+			data[__required_environments.tag] = service
+			
+			var __supported_environments_default: Array[String] = []
+			__supported_environments = PBField.new("supported_environments", PB_DATA_TYPE.STRING, PB_RULE.REPEATED, 4, true, __supported_environments_default)
+			service = PBServiceField.new()
+			service.field = __supported_environments
+			data[__supported_environments.tag] = service
+			
+		var data = {}
+		
+		var __required_features: PBField
+		func get_required_features() -> Array[String]:
+			return __required_features.value
+		func clear_required_features() -> void:
+			data[1].state = PB_SERVICE_STATE.UNFILLED
+			__required_features.value.clear()
+		func add_required_features(value : String) -> void:
+			__required_features.value.append(value)
+		
+		var __supported_features: PBField
+		func get_supported_features() -> Array[String]:
+			return __supported_features.value
+		func clear_supported_features() -> void:
+			data[2].state = PB_SERVICE_STATE.UNFILLED
+			__supported_features.value.clear()
+		func add_supported_features(value : String) -> void:
+			__supported_features.value.append(value)
+		
+		var __required_environments: PBField
+		func get_required_environments() -> Array[String]:
+			return __required_environments.value
+		func clear_required_environments() -> void:
+			data[3].state = PB_SERVICE_STATE.UNFILLED
+			__required_environments.value.clear()
+		func add_required_environments(value : String) -> void:
+			__required_environments.value.append(value)
+		
+		var __supported_environments: PBField
+		func get_supported_environments() -> Array[String]:
+			return __supported_environments.value
+		func clear_supported_environments() -> void:
+			data[4].state = PB_SERVICE_STATE.UNFILLED
+			__supported_environments.value.clear()
+		func add_supported_environments(value : String) -> void:
+			__supported_environments.value.append(value)
+		
+		func _to_string() -> String:
+			return PBPacker.message_to_string(data)
+			
+		func to_bytes() -> PackedByteArray:
+			return PBPacker.pack_message(data)
+			
+		func from_bytes(bytes : PackedByteArray, offset : int = 0, limit : int = -1) -> int:
+			var cur_limit = bytes.size()
+			if limit != -1:
+				cur_limit = limit
+			var result = PBPacker.unpack_message(data, bytes, offset, cur_limit)
+			if result == cur_limit:
+				if PBPacker.check_required(data):
+					if limit == -1:
+						return PB_ERR.NO_ERRORS
+				else:
+					return PB_ERR.REQUIRED_FIELDS
+			elif limit == -1 && result > 0:
+				return PB_ERR.PARSE_INCOMPLETE
+			return result
+		
+	func _to_string() -> String:
+		return PBPacker.message_to_string(data)
+		
+	func to_bytes() -> PackedByteArray:
+		return PBPacker.pack_message(data)
+		
+	func from_bytes(bytes : PackedByteArray, offset : int = 0, limit : int = -1) -> int:
+		var cur_limit = bytes.size()
+		if limit != -1:
+			cur_limit = limit
+		var result = PBPacker.unpack_message(data, bytes, offset, cur_limit)
+		if result == cur_limit:
+			if PBPacker.check_required(data):
+				if limit == -1:
+					return PB_ERR.NO_ERRORS
+			else:
+				return PB_ERR.REQUIRED_FIELDS
+		elif limit == -1 && result > 0:
+			return PB_ERR.PARSE_INCOMPLETE
+		return result
+	
 class Header:
 	func _init():
 		var service
@@ -1733,6 +2088,125 @@ class Header:
 		__flags.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
 	func set_flags(value : int) -> void:
 		__flags.value = value
+	
+	func _to_string() -> String:
+		return PBPacker.message_to_string(data)
+		
+	func to_bytes() -> PackedByteArray:
+		return PBPacker.pack_message(data)
+		
+	func from_bytes(bytes : PackedByteArray, offset : int = 0, limit : int = -1) -> int:
+		var cur_limit = bytes.size()
+		if limit != -1:
+			cur_limit = limit
+		var result = PBPacker.unpack_message(data, bytes, offset, cur_limit)
+		if result == cur_limit:
+			if PBPacker.check_required(data):
+				if limit == -1:
+					return PB_ERR.NO_ERRORS
+			else:
+				return PB_ERR.REQUIRED_FIELDS
+		elif limit == -1 && result > 0:
+			return PB_ERR.PARSE_INCOMPLETE
+		return result
+	
+class Heartbeat:
+	func _init():
+		var service
+		
+		__header = PBField.new("header", PB_DATA_TYPE.MESSAGE, PB_RULE.OPTIONAL, 1, true, DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE])
+		service = PBServiceField.new()
+		service.field = __header
+		service.func_ref = Callable(self, "new_header")
+		data[__header.tag] = service
+		
+		__tick = PBField.new("tick", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 2, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
+		service = PBServiceField.new()
+		service.field = __tick
+		data[__tick.tag] = service
+		
+		__timestamp = PBField.new("timestamp", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 3, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
+		service = PBServiceField.new()
+		service.field = __timestamp
+		data[__timestamp.tag] = service
+		
+		__response_timestamp = PBField.new("response_timestamp", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 4, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
+		service = PBServiceField.new()
+		service.field = __response_timestamp
+		data[__response_timestamp.tag] = service
+		
+		__session_id = PBField.new("session_id", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 5, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
+		service = PBServiceField.new()
+		service.field = __session_id
+		data[__session_id.tag] = service
+		
+	var data = {}
+	
+	var __header: PBField
+	func has_header() -> bool:
+		if __header.value != null:
+			return true
+		return false
+	func get_header() -> Header:
+		return __header.value
+	func clear_header() -> void:
+		data[1].state = PB_SERVICE_STATE.UNFILLED
+		__header.value = DEFAULT_VALUES_3[PB_DATA_TYPE.MESSAGE]
+	func new_header() -> Header:
+		__header.value = Header.new()
+		return __header.value
+	
+	var __tick: PBField
+	func has_tick() -> bool:
+		if __tick.value != null:
+			return true
+		return false
+	func get_tick() -> int:
+		return __tick.value
+	func clear_tick() -> void:
+		data[2].state = PB_SERVICE_STATE.UNFILLED
+		__tick.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
+	func set_tick(value : int) -> void:
+		__tick.value = value
+	
+	var __timestamp: PBField
+	func has_timestamp() -> bool:
+		if __timestamp.value != null:
+			return true
+		return false
+	func get_timestamp() -> int:
+		return __timestamp.value
+	func clear_timestamp() -> void:
+		data[3].state = PB_SERVICE_STATE.UNFILLED
+		__timestamp.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
+	func set_timestamp(value : int) -> void:
+		__timestamp.value = value
+	
+	var __response_timestamp: PBField
+	func has_response_timestamp() -> bool:
+		if __response_timestamp.value != null:
+			return true
+		return false
+	func get_response_timestamp() -> int:
+		return __response_timestamp.value
+	func clear_response_timestamp() -> void:
+		data[4].state = PB_SERVICE_STATE.UNFILLED
+		__response_timestamp.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
+	func set_response_timestamp(value : int) -> void:
+		__response_timestamp.value = value
+	
+	var __session_id: PBField
+	func has_session_id() -> bool:
+		if __session_id.value != null:
+			return true
+		return false
+	func get_session_id() -> int:
+		return __session_id.value
+	func clear_session_id() -> void:
+		data[5].state = PB_SERVICE_STATE.UNFILLED
+		__session_id.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
+	func set_session_id(value : int) -> void:
+		__session_id.value = value
 	
 	func _to_string() -> String:
 		return PBPacker.message_to_string(data)

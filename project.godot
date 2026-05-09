@@ -33,6 +33,10 @@ window/size/mode=2
 window/stretch/mode="canvas_items"
 window/vsync/vsync_mode=0
 
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/godobuf/plugin.cfg")
+
 [filesystem]
 
 import/fbx/enabled=false
