@@ -12,4 +12,4 @@ var renderer = null
 
 var use_vr = false
 
-var version = "alpha2025223"
+var version: String = ProjectSettings.get_setting("application/config/version")
