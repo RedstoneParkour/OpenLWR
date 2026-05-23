@@ -4,7 +4,7 @@ const REC = preload("res://Assets/Generated/Protocols/rec.gd")
 const UBC = preload("res://Assets/Generated/Protocols/ubc.gd")
 
 func _dprint(what):
-	if Engine.get_physics_frames() % 60 == 0:
+	if _ubc_unregistered_time < 0.01:
 		print("DEBUG: ", what)
 
 signal connecting()
@@ -237,13 +237,13 @@ func _heartbeat_ubc():
 	#print("sending ubc heartbeat")
 	ubc_socket.put_packet(packet.to_bytes())
 
-var _ubc_unregistered_tick := 0
-func _tick_ubc_unregistered():
+var _ubc_unregistered_time := 0.0
+func _tick_ubc_unregistered(delta: float):
 	#if ubc_session_id != 0:
 	#	return
-	_ubc_unregistered_tick += 1
-	if _ubc_unregistered_tick % 60 == 0:
-		_ubc_unregistered_tick = 0
+	_ubc_unregistered_time += delta
+	if _ubc_unregistered_time > 1.0:
+		_ubc_unregistered_time = 0.0
 		_heartbeat_ubc()
 	pass
 
@@ -368,10 +368,20 @@ func _read_packets_ubc(process_ubc: Callable, process_heartbeat: Callable):
 			process_heartbeat.call(heartbeat)
 		
 
-func _physics_process(_delta):
+var last_net_update := Time.get_ticks_msec() as float / 1000.0
+func _process(_delta: float):
+	# so it turns out the delta can be wrong (it says 0.133 when its actually 1 second)
+	# i believe some linux window managers play dirty and slow down rendering or something
+	# and guess who's using one of those
+	# anyways to prevent timeouts we calculate the delta ourselves
+	var new_time := Time.get_ticks_msec() as float / 1000.0
+	var delta := new_time - last_net_update
+	last_net_update = new_time
+	#print("net process %s %s" % [delta, _ubc_unregistered_time])
+	
 	_dprint("")
 	_dprint(current_state)
-	_tick_ubc_unregistered()
+	_tick_ubc_unregistered(delta)
 	match current_state:
 		State.CONNECTING:
 			if rec_socket.poll() != Error.OK:
