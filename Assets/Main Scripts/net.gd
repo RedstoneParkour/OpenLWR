@@ -405,7 +405,7 @@ func _ready():
 	connected.connect(_on_connected)
 	_on_ready()
 	var arguments = _parse_arguments()
-	var djoin_ip = "127.0.0.1:7001"
+	var djoin_ip = "127.0.0.1"
 	if arguments.has("username"):
 		username = arguments.username
 	if arguments.has("join"):
