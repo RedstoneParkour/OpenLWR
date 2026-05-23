@@ -80,10 +80,11 @@ func _ready():
 	switch_model_update(true)
 
 func net_update(info):
-	if 0 in info: # switch position
-		var do_sound = not (switch_position == info[0])
-		switch_position = info[0]
-		switch_model_update(do_sound)
+	if info is Dictionary:
+		if 0 in info: # switch position
+			var do_sound = not (switch_position == info[0])
+			switch_position = info[0]
+			switch_model_update(do_sound)
 	pass
 
 func switch_update(info: Dictionary):

@@ -415,4 +415,11 @@ func _ready():
 	pass
 
 func _exit_tree() -> void:
+	var disconnect_msg := REC.RECMessage.new()
+	_gen_rec_header(disconnect_msg)
+	disconnect_msg.set_type(REC.RECMessageType.REC_SESSION_CLOSE)
+	var disconnect_data := disconnect_msg.new_session_close()
+	disconnect_data.set_msg("User initiated disconnect")
+	disconnect_data.set_reason(REC.RECSessionClose.Reason.DISCONNECTED)
+	rec_socket.put_data(disconnect_data.to_bytes())
 	rec_socket.disconnect_from_host()
