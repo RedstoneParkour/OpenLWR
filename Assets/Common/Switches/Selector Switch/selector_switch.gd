@@ -16,7 +16,7 @@ enum RotateOpposite {
 }
 
 @onready var player = $"/root/Node3D/Player"
-var switch_position: int = 0
+@export var switch_position: int = 0
 @export var switch_positions: Dictionary[int, float]
 var switch_flag: SwitchFlag
 var switch_local_push: bool = false
@@ -25,8 +25,6 @@ var switch_local_push: bool = false
 @onready var has_flag = get_node_or_null("selector_switch/Flag")
 var flag_green = null
 var flag_red = null
-
-@export var light_nodes: Dictionary[String, NodePath] = {}
 
 #func init():
 	#switch = node_3d.switches[self.name]
@@ -55,19 +53,6 @@ var flag_red = null
 		#
 	#switch_position_change(switch["position"],true)
 
-func _find_light_node(netname: StringName):
-	if light_nodes.has(netname):
-		return light_nodes[netname]
-	var node
-	if netname == &"green" or netname == &"red":
-		node = get_node(netname+"/Lamp")
-	else:
-		node = get_node(NodePath(netname))
-	if node:
-		node.material = node.material.duplicate()
-	light_nodes[netname] = node
-	return node
-
 func _flag_to_string(flag: SwitchFlag):
 	match flag:
 		SwitchFlag.GREEN:
@@ -95,14 +80,13 @@ func _ready():
 	switch_model_update(true)
 
 func net_update(info):
-	#print(info)
+	if 0 in info: # switch position
+		var do_sound = not (switch_position == info[0])
+		switch_position = info[0]
+		switch_model_update(do_sound)
 	pass
 
 func switch_update(info: Dictionary):
-	if "lights" in info:
-		for name in info.lights:
-			_find_light_node(name)
-			get_node(light_nodes[name]).material.emission_enabled = info.lights[name]
 	if "position" in info:
 		switch_position = info.position
 	if "positions" in info:

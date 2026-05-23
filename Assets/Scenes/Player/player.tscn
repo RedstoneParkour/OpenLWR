@@ -1,4 +1,4 @@
-[gd_scene load_steps=16 format=3 uid="uid://7gv6q50fuutj"]
+[gd_scene format=3 uid="uid://7gv6q50fuutj"]
 
 [ext_resource type="Script" uid="uid://dq4svqb436v0g" path="res://Assets/Scenes/Player/player.gd" id="1_1w47b"]
 [ext_resource type="Script" uid="uid://boxn724hm7eeg" path="res://Assets/Scenes/Player/framerate_counter.gd" id="2_m6aot"]
@@ -70,31 +70,31 @@ _data = {
 &"opaque": SubResource("Animation_qrta0")
 }
 
-[node name="Player" type="CharacterBody3D"]
+[node name="Player" type="CharacterBody3D" unique_id=573138129]
 collision_layer = 3
 script = ExtResource("1_1w47b")
 
-[node name="CollisionShape3d" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3d" type="CollisionShape3D" parent="." unique_id=1256035574]
 shape = SubResource("CapsuleShape3D_emkox")
 
-[node name="MeshInstance3d" type="MeshInstance3D" parent="."]
+[node name="MeshInstance3d" type="MeshInstance3D" parent="." unique_id=1807632484]
 mesh = SubResource("CapsuleMesh_6b3ky")
 
-[node name="Head" type="Node3D" parent="."]
+[node name="Head" type="Node3D" parent="." unique_id=897434340]
 
-[node name="Camera3d" type="Camera3D" parent="Head"]
+[node name="Camera3d" type="Camera3D" parent="Head" unique_id=84755434]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.603, 0)
 current = true
-near = 0.035
+near = 0.25
 far = 48.01
 
-[node name="RayCast3d" type="RayCast3D" parent="Head/Camera3d"]
+[node name="RayCast3d" type="RayCast3D" parent="Head/Camera3d" unique_id=846983649]
 transform = Transform3D(2.98023e-08, 0, 1, 0, 1, 0, -1, 0, 2.98023e-08, 0, -0.00588065, 0.463024)
 target_position = Vector3(60, 0, 0)
 
-[node name="Node2D" type="Node2D" parent="Head/Camera3d"]
+[node name="Node2D" type="Node2D" parent="Head/Camera3d" unique_id=1950280486]
 
-[node name="Label" type="Label" parent="Head/Camera3d/Node2D"]
+[node name="Label" type="Label" parent="Head/Camera3d/Node2D" unique_id=1869953315]
 offset_left = 1.0
 offset_right = 115.0
 offset_bottom = 23.0
@@ -102,62 +102,62 @@ text = "FPS:
 Full:"
 script = ExtResource("2_m6aot")
 
-[node name="Menu" type="Node2D" parent="Head/Camera3d"]
+[node name="Menu" type="Node2D" parent="Head/Camera3d" unique_id=1931273843]
 visible = false
 script = ExtResource("6_qkj5w")
 
-[node name="Menu" type="Node2D" parent="Head/Camera3d/Menu"]
+[node name="Menu" type="Node2D" parent="Head/Camera3d/Menu" unique_id=362547271]
 
-[node name="MeshInstance2D" type="MeshInstance2D" parent="Head/Camera3d/Menu/Menu"]
+[node name="MeshInstance2D" type="MeshInstance2D" parent="Head/Camera3d/Menu/Menu" unique_id=814419203]
 modulate = Color(0.120758, 0.166205, 0.220152, 0.603922)
 position = Vector2(960, 540)
 scale = Vector2(1920, 1080)
 mesh = SubResource("BoxMesh_n4lxw")
 
-[node name="Disconnect" type="Button" parent="Head/Camera3d/Menu/Menu"]
+[node name="Disconnect" type="Button" parent="Head/Camera3d/Menu/Menu" unique_id=1632371917]
 offset_left = 747.0
 offset_top = 931.0
 offset_right = 1076.0
 offset_bottom = 1030.0
 text = "Disconnect "
 
-[node name="Disconnect2" type="Button" parent="Head/Camera3d/Menu/Menu"]
+[node name="Disconnect2" type="Button" parent="Head/Camera3d/Menu/Menu" unique_id=424644013]
 offset_left = 1597.0
 offset_top = 931.0
 offset_right = 1867.0
 offset_bottom = 1030.0
 text = "Report a bug"
 
-[node name="Settings" type="Button" parent="Head/Camera3d/Menu/Menu"]
+[node name="Settings" type="Button" parent="Head/Camera3d/Menu/Menu" unique_id=1712197804]
 offset_left = 747.0
 offset_top = 814.0
 offset_right = 1076.0
 offset_bottom = 913.0
 text = "Settings"
 
-[node name="Continue" type="Button" parent="Head/Camera3d/Menu/Menu"]
+[node name="Continue" type="Button" parent="Head/Camera3d/Menu/Menu" unique_id=1688680520]
 offset_left = 747.0
 offset_top = 700.0
 offset_right = 1076.0
 offset_bottom = 799.0
 text = "Continue"
 
-[node name="Settings" type="Node2D" parent="Head/Camera3d/Menu"]
+[node name="Settings" type="Node2D" parent="Head/Camera3d/Menu" unique_id=994004803]
 
-[node name="Settings" type="TabContainer" parent="Head/Camera3d/Menu/Settings"]
+[node name="Settings" type="TabContainer" parent="Head/Camera3d/Menu/Settings" unique_id=1666517028]
 offset_left = 287.0
 offset_top = 75.0
 offset_right = 1535.0
 offset_bottom = 680.0
 current_tab = 1
 
-[node name="Gameplay" type="Control" parent="Head/Camera3d/Menu/Settings/Settings"]
+[node name="Gameplay" type="Control" parent="Head/Camera3d/Menu/Settings/Settings" unique_id=1881022379]
 visible = false
 layout_mode = 2
 script = ExtResource("5_a41y1")
 metadata/_tab_index = 0
 
-[node name="player_opacity" type="HSlider" parent="Head/Camera3d/Menu/Settings/Settings/Gameplay"]
+[node name="player_opacity" type="HSlider" parent="Head/Camera3d/Menu/Settings/Settings/Gameplay" unique_id=2143931025]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.026
@@ -174,7 +174,7 @@ step = 0.1
 value = 1.0
 tick_count = 3
 
-[node name="Label" type="Label" parent="Head/Camera3d/Menu/Settings/Settings/Gameplay/player_opacity"]
+[node name="Label" type="Label" parent="Head/Camera3d/Menu/Settings/Settings/Gameplay/player_opacity" unique_id=1819876841]
 layout_mode = 0
 offset_top = -16.0
 offset_right = 135.0
@@ -182,19 +182,19 @@ offset_bottom = 7.0
 text = "Player Opacity"
 horizontal_alignment = 1
 
-[node name="Graphics" type="Control" parent="Head/Camera3d/Menu/Settings/Settings"]
+[node name="Graphics" type="Control" parent="Head/Camera3d/Menu/Settings/Settings" unique_id=1456610961]
 layout_mode = 2
 script = ExtResource("6_ssrgo")
 metadata/_tab_index = 1
 
-[node name="Occlusion" type="OptionButton" parent="Head/Camera3d/Menu/Settings/Settings/Graphics"]
+[node name="Occlusion" type="OptionButton" parent="Head/Camera3d/Menu/Settings/Settings/Graphics" unique_id=1663691248]
 layout_mode = 0
 offset_left = 26.0
 offset_top = 43.0
 offset_right = 107.0
 offset_bottom = 63.0
 
-[node name="Label" type="Label" parent="Head/Camera3d/Menu/Settings/Settings/Graphics/Occlusion"]
+[node name="Label" type="Label" parent="Head/Camera3d/Menu/Settings/Settings/Graphics/Occlusion" unique_id=1879303281]
 layout_mode = 0
 offset_left = 1.0
 offset_top = -25.0
@@ -202,14 +202,14 @@ offset_right = 78.0
 offset_bottom = -2.0
 text = "Occlusion"
 
-[node name="Resolution" type="OptionButton" parent="Head/Camera3d/Menu/Settings/Settings/Graphics"]
+[node name="Resolution" type="OptionButton" parent="Head/Camera3d/Menu/Settings/Settings/Graphics" unique_id=1556861226]
 layout_mode = 0
 offset_left = 26.0
 offset_top = 219.0
 offset_right = 107.0
 offset_bottom = 239.0
 
-[node name="Label" type="Label" parent="Head/Camera3d/Menu/Settings/Settings/Graphics/Resolution"]
+[node name="Label" type="Label" parent="Head/Camera3d/Menu/Settings/Settings/Graphics/Resolution" unique_id=1198445218]
 layout_mode = 0
 offset_left = 1.0
 offset_top = -25.0
@@ -217,14 +217,14 @@ offset_right = 78.0
 offset_bottom = -2.0
 text = "Resolution"
 
-[node name="Vsync" type="OptionButton" parent="Head/Camera3d/Menu/Settings/Settings/Graphics"]
+[node name="Vsync" type="OptionButton" parent="Head/Camera3d/Menu/Settings/Settings/Graphics" unique_id=679514112]
 layout_mode = 0
 offset_left = 151.0
 offset_top = 43.0
 offset_right = 232.0
 offset_bottom = 63.0
 
-[node name="Label" type="Label" parent="Head/Camera3d/Menu/Settings/Settings/Graphics/Vsync"]
+[node name="Label" type="Label" parent="Head/Camera3d/Menu/Settings/Settings/Graphics/Vsync" unique_id=1413042065]
 layout_mode = 0
 offset_left = 1.0
 offset_top = -25.0
@@ -232,14 +232,14 @@ offset_right = 78.0
 offset_bottom = -2.0
 text = "VSync"
 
-[node name="Antialiasing" type="OptionButton" parent="Head/Camera3d/Menu/Settings/Settings/Graphics"]
+[node name="Antialiasing" type="OptionButton" parent="Head/Camera3d/Menu/Settings/Settings/Graphics" unique_id=1513862747]
 layout_mode = 0
 offset_left = 26.0
 offset_top = 167.0
 offset_right = 107.0
 offset_bottom = 187.0
 
-[node name="Label" type="Label" parent="Head/Camera3d/Menu/Settings/Settings/Graphics/Antialiasing"]
+[node name="Label" type="Label" parent="Head/Camera3d/Menu/Settings/Settings/Graphics/Antialiasing" unique_id=508976910]
 layout_mode = 0
 offset_left = 1.0
 offset_top = -25.0
@@ -247,13 +247,13 @@ offset_right = 78.0
 offset_bottom = -2.0
 text = "Antialiasing"
 
-[node name="Controls" type="Control" parent="Head/Camera3d/Menu/Settings/Settings"]
+[node name="Controls" type="Control" parent="Head/Camera3d/Menu/Settings/Settings" unique_id=1393150598]
 visible = false
 layout_mode = 2
 script = ExtResource("5_a41y1")
 metadata/_tab_index = 2
 
-[node name="zoom_toggle" type="CheckButton" parent="Head/Camera3d/Menu/Settings/Settings/Controls"]
+[node name="zoom_toggle" type="CheckButton" parent="Head/Camera3d/Menu/Settings/Settings/Controls" unique_id=1590228995]
 layout_mode = 0
 offset_left = 25.0
 offset_top = 38.0
@@ -261,7 +261,7 @@ offset_right = 172.0
 offset_bottom = 69.0
 text = "Toggle Zoom"
 
-[node name="pan_mode" type="CheckButton" parent="Head/Camera3d/Menu/Settings/Settings/Controls"]
+[node name="pan_mode" type="CheckButton" parent="Head/Camera3d/Menu/Settings/Settings/Controls" unique_id=1679658689]
 layout_mode = 0
 offset_left = 25.0
 offset_top = 70.0
@@ -269,7 +269,7 @@ offset_right = 172.0
 offset_bottom = 101.0
 text = "Pan Mode"
 
-[node name="mouse_sensitivity" type="HSlider" parent="Head/Camera3d/Menu/Settings/Settings/Controls"]
+[node name="mouse_sensitivity" type="HSlider" parent="Head/Camera3d/Menu/Settings/Settings/Controls" unique_id=586713695]
 layout_mode = 1
 anchors_preset = -1
 anchor_left = 0.026
@@ -286,21 +286,21 @@ step = 0.1
 value = 1.0
 tick_count = 3
 
-[node name="Label" type="Label" parent="Head/Camera3d/Menu/Settings/Settings/Controls/mouse_sensitivity"]
+[node name="Label" type="Label" parent="Head/Camera3d/Menu/Settings/Settings/Controls/mouse_sensitivity" unique_id=1172003087]
 layout_mode = 0
 offset_top = -16.0
 offset_right = 135.0
 offset_bottom = 7.0
 text = "Camera Sensitivity"
 
-[node name="Exit" type="Button" parent="Head/Camera3d/Menu/Settings"]
+[node name="Exit" type="Button" parent="Head/Camera3d/Menu/Settings" unique_id=177994279]
 offset_left = 794.0
 offset_top = 74.0
 offset_right = 829.0
 offset_bottom = 105.0
 text = "X"
 
-[node name="Chat" type="VBoxContainer" parent="Head/Camera3d"]
+[node name="Chat" type="VBoxContainer" parent="Head/Camera3d" unique_id=263686986]
 anchors_preset = -1
 anchor_top = 0.75
 anchor_right = 0.25
@@ -309,31 +309,29 @@ grow_vertical = 0
 alignment = 2
 script = ExtResource("8_c1qgp")
 
-[node name="Messages" type="ScrollContainer" parent="Head/Camera3d/Chat"]
+[node name="Messages" type="ScrollContainer" parent="Head/Camera3d/Chat" unique_id=1114960705]
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 3
 
-[node name="VBoxContainer" type="VBoxContainer" parent="Head/Camera3d/Chat/Messages"]
+[node name="VBoxContainer" type="VBoxContainer" parent="Head/Camera3d/Chat/Messages" unique_id=256674263]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 alignment = 2
 
-[node name="Edit" type="LineEdit" parent="Head/Camera3d/Chat"]
+[node name="Edit" type="LineEdit" parent="Head/Camera3d/Chat" unique_id=837804105]
 layout_mode = 2
 size_flags_vertical = 8
 
-[node name="AnimationPlayer" type="AnimationPlayer" parent="Head/Camera3d/Chat"]
-libraries = {
-"": SubResource("AnimationLibrary_ypu8n")
-}
+[node name="AnimationPlayer" type="AnimationPlayer" parent="Head/Camera3d/Chat" unique_id=1227512473]
+libraries/ = SubResource("AnimationLibrary_ypu8n")
 
-[node name="Move" parent="Head/Camera3d" instance=ExtResource("7_c2n07")]
+[node name="Move" parent="Head/Camera3d" unique_id=415532387 instance=ExtResource("7_c2n07")]
 visible = false
 use_input_actions = false
 
-[node name="Look" parent="Head/Camera3d" instance=ExtResource("7_c2n07")]
+[node name="Look" parent="Head/Camera3d" unique_id=1437130821 instance=ExtResource("7_c2n07")]
 visible = false
 offset_left = 1615.0
 offset_top = -309.0
@@ -341,7 +339,7 @@ offset_right = 1915.0
 offset_bottom = -9.0
 use_input_actions = false
 
-[node name="Zoom" type="TouchScreenButton" parent="Head/Camera3d"]
+[node name="Zoom" type="TouchScreenButton" parent="Head/Camera3d" unique_id=1266817596]
 visible = false
 position = Vector2(1754, 627)
 scale = Vector2(1.42, 1.36)
