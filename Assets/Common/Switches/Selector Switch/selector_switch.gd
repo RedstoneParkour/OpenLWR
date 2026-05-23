@@ -17,7 +17,7 @@ enum RotateOpposite {
 
 @onready var player = $"/root/Node3D/Player"
 var switch_position: int = 0
-@export var switch_positions: Dictionary
+@export var switch_positions: Dictionary[int, float]
 var switch_flag: SwitchFlag
 var switch_local_push: bool = false
 @export var switch_momentary: bool = false
@@ -26,7 +26,7 @@ var switch_local_push: bool = false
 var flag_green = null
 var flag_red = null
 
-var light_nodes: Dictionary = {}
+@export var light_nodes: Dictionary[String, NodePath] = {}
 
 #func init():
 	#switch = node_3d.switches[self.name]
@@ -94,11 +94,15 @@ func _ready():
 	player.unclick_left.connect(switch_unclick)
 	switch_model_update(true)
 
+func net_update(info):
+	#print(info)
+	pass
+
 func switch_update(info: Dictionary):
 	if "lights" in info:
 		for name in info.lights:
 			_find_light_node(name)
-			light_nodes[name].material.emission_enabled = info.lights[name]
+			get_node(light_nodes[name]).material.emission_enabled = info.lights[name]
 	if "position" in info:
 		switch_position = info.position
 	if "positions" in info:

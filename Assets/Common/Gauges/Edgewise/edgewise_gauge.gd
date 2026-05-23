@@ -859,6 +859,10 @@ func set_gauge_value(value, min, max):
 func gauge_update(value):
 	set_gauge_value(value, scale_min, scale_max)
 
+func net_update(info):
+	print(info)
+	pass
+
 func _ready():
 	if netname == &"":
 		netname = StringName(name)

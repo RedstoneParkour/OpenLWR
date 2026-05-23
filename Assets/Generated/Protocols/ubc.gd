@@ -1127,25 +1127,25 @@ class Heartbeat:
 		service.func_ref = Callable(self, "new_header")
 		data[__header.tag] = service
 		
-		__tick = PBField.new("tick", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 2, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
+		__session_id = PBField.new("session_id", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 2, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
+		service = PBServiceField.new()
+		service.field = __session_id
+		data[__session_id.tag] = service
+		
+		__tick = PBField.new("tick", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 3, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
 		service = PBServiceField.new()
 		service.field = __tick
 		data[__tick.tag] = service
 		
-		__timestamp = PBField.new("timestamp", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 3, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
+		__timestamp = PBField.new("timestamp", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 4, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
 		service = PBServiceField.new()
 		service.field = __timestamp
 		data[__timestamp.tag] = service
 		
-		__response_timestamp = PBField.new("response_timestamp", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 4, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
+		__response_timestamp = PBField.new("response_timestamp", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 5, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
 		service = PBServiceField.new()
 		service.field = __response_timestamp
 		data[__response_timestamp.tag] = service
-		
-		__session_id = PBField.new("session_id", PB_DATA_TYPE.UINT32, PB_RULE.OPTIONAL, 5, true, DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32])
-		service = PBServiceField.new()
-		service.field = __session_id
-		data[__session_id.tag] = service
 		
 	var data = {}
 	
@@ -1163,6 +1163,19 @@ class Heartbeat:
 		__header.value = Header.new()
 		return __header.value
 	
+	var __session_id: PBField
+	func has_session_id() -> bool:
+		if __session_id.value != null:
+			return true
+		return false
+	func get_session_id() -> int:
+		return __session_id.value
+	func clear_session_id() -> void:
+		data[2].state = PB_SERVICE_STATE.UNFILLED
+		__session_id.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
+	func set_session_id(value : int) -> void:
+		__session_id.value = value
+	
 	var __tick: PBField
 	func has_tick() -> bool:
 		if __tick.value != null:
@@ -1171,7 +1184,7 @@ class Heartbeat:
 	func get_tick() -> int:
 		return __tick.value
 	func clear_tick() -> void:
-		data[2].state = PB_SERVICE_STATE.UNFILLED
+		data[3].state = PB_SERVICE_STATE.UNFILLED
 		__tick.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
 	func set_tick(value : int) -> void:
 		__tick.value = value
@@ -1184,7 +1197,7 @@ class Heartbeat:
 	func get_timestamp() -> int:
 		return __timestamp.value
 	func clear_timestamp() -> void:
-		data[3].state = PB_SERVICE_STATE.UNFILLED
+		data[4].state = PB_SERVICE_STATE.UNFILLED
 		__timestamp.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
 	func set_timestamp(value : int) -> void:
 		__timestamp.value = value
@@ -1197,23 +1210,10 @@ class Heartbeat:
 	func get_response_timestamp() -> int:
 		return __response_timestamp.value
 	func clear_response_timestamp() -> void:
-		data[4].state = PB_SERVICE_STATE.UNFILLED
+		data[5].state = PB_SERVICE_STATE.UNFILLED
 		__response_timestamp.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
 	func set_response_timestamp(value : int) -> void:
 		__response_timestamp.value = value
-	
-	var __session_id: PBField
-	func has_session_id() -> bool:
-		if __session_id.value != null:
-			return true
-		return false
-	func get_session_id() -> int:
-		return __session_id.value
-	func clear_session_id() -> void:
-		data[5].state = PB_SERVICE_STATE.UNFILLED
-		__session_id.value = DEFAULT_VALUES_3[PB_DATA_TYPE.UINT32]
-	func set_session_id(value : int) -> void:
-		__session_id.value = value
 	
 	func _to_string() -> String:
 		return PBPacker.message_to_string(data)

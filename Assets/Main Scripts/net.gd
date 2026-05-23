@@ -4,8 +4,8 @@ const REC = preload("res://Assets/Generated/Protocols/rec.gd")
 const UBC = preload("res://Assets/Generated/Protocols/ubc.gd")
 
 func _dprint(what):
-	if Engine.get_process_frames() % 60 == 0:
-		push_warning("DEBUG: ", what)
+	if Engine.get_physics_frames() % 60 == 0:
+		print("DEBUG: ", what)
 
 signal connecting()
 signal begin_login()
@@ -38,8 +38,8 @@ var inbound_packet_queue: Array[Dictionary] = []
 # keys are int, values are NodePath
 var devices: Dictionary[int, NodePath] = {}
 
-# keys are int, values vary
-var device_last_update: Dictionary = {}
+# keys are int, values are Dictionary
+var device_last_update: Dictionary[int, Dictionary] = {}
 
 # keys are int, values are boolean
 var _client_updated_devices: Dictionary = {}
@@ -53,7 +53,7 @@ func name_to_id(netname: StringName) -> int:
 func register_device(id: int, device_path: NodePath) -> void:
 	devices[id] = device_path
 	var last_update = get_device_state(id)
-	#get_node(device_path).net_update(last_update)
+	get_node(device_path).net_update(last_update)
 
 func unregister_device(id: int) -> bool:
 	return devices.erase(id)
@@ -64,6 +64,8 @@ func get_device_state(id: int) -> Variant:
 func _update_device(id: int, data: Dictionary) -> void:
 	var known: Dictionary = device_last_update.get_or_add(id, {})
 	known.merge(data, true)
+	print(known)
+	print("trying to update %s" % id)
 	if id in devices:
 		get_node(devices[id]).net_update(known)
 
@@ -144,10 +146,18 @@ var uec_socket: PacketPeerUDP = PacketPeerUDP.new()
 var uec_session_id: int = 0
 
 func connect_async(host: String, port := 1312):
-	if rec_socket.connect_to_host(host, port+1) != Error.OK:
-		print("shit went wrong!")
+	var err = rec_socket.connect_to_host(host, port+1)
+	if err != Error.OK:
+		print("shit went wrong! %s" % err)
 		return
-	ubc_socket.connect_to_host(host, port)
+	if ubc_socket.bind(0) != Error.OK:
+		print("unable to bind UBC socket")
+		return
+	assert(ubc_socket.is_bound())
+	if ubc_socket.connect_to_host(host, port) != Error.OK:
+		print("unable to set up UBC socket")
+		return
+	print("ubc listening on %s" % ubc_socket.get_local_port())
 	current_state = State.CONNECTING
 	connecting.emit()
 
@@ -207,6 +217,7 @@ func _on_connected():
 func register_ubc_uec():
 	# fuck the uec for now
 	if ubc_session_id != 0 and (true or uec_session_id != 0):
+		print("registering channels")
 		const RECMessageType = REC.RECMessageType
 		var regpack := REC.RECMessage.new()
 		_gen_rec_header(regpack)
@@ -223,45 +234,73 @@ func _heartbeat_ubc():
 	_gen_ubc_header(packet.new_header())
 	packet.set_session_id(ubc_session_id)
 	
+	#print("sending ubc heartbeat")
 	ubc_socket.put_packet(packet.to_bytes())
 
 var _ubc_unregistered_tick := 0
 func _tick_ubc_unregistered():
-	if ubc_session_id != 0:
-		return
+	#if ubc_session_id != 0:
+	#	return
 	_ubc_unregistered_tick += 1
-	if _ubc_unregistered_tick % 10 == 0:
+	if _ubc_unregistered_tick % 60 == 0:
+		_ubc_unregistered_tick = 0
 		_heartbeat_ubc()
 	pass
 
 func _process_ubc_unregistered(packet: UBC.Heartbeat) -> void:
 	if ubc_session_id != 0:
 		return
+	print(packet)
 	if packet.has_session_id():
 		ubc_session_id = packet.get_session_id()
+		print("UBC SID acquired: %s" % ubc_session_id)
 		register_ubc_uec()
 
 func _process_ubc_connected(packet: UBC.UBCMessage) -> void:
+	print("BEGIN UBC UPDATE PACKET")
 	for device in packet.get_payloads():
 		var id = device.get_device_id()
-		var data = {}
+		print("DEVICE %s" % id)
+		var data: Dictionary[int, Variant] = {}
 		for field in device.get_data_fields():
 			var value
 			const DataCase = UBC.UBCMessage.Payload.Data.DataCase
-			match field.get_data_case():
-				DataCase.DATA_NOT_SET:
-					continue
-				DataCase.STRING_VALUE:
-					value = field.get_string_value()
-				DataCase.INT_VALUE:
-					value = field.get_int_value()
-				DataCase.FLOAT_VALUE:
-					value = field.get_float_value()
-				DataCase.BOOL_VALUE:
-					value = field.get_bool_value()
-				DataCase.BYTES_VALUE:
-					value = field.get_bytes_value()
-			data.set(field.get_field(), value)
+			print("field %s type %s" % [field.get_field(), field.get_data_case()])
+			#match field.get_data_case():
+				#DataCase.DATA_NOT_SET:
+					#print("!!Data not set")
+					#continue
+				#DataCase.STRING_VALUE:
+					#value = field.get_string_value()
+					#print("string value %s" % value)
+				#DataCase.INT_VALUE:
+					#value = field.get_int_value()
+					#print("int value %s" % value)
+				#DataCase.FLOAT_VALUE:
+					#value = field.get_float_value()
+					#print("float value %s" % value)
+				#DataCase.BOOL_VALUE:
+					#value = field.get_bool_value()
+					#print("bool value %s" % value)
+				#DataCase.BYTES_VALUE:
+					#value = field.get_bytes_value()
+					#print("bytes value %s" % value)
+			if field.has_string_value():
+				value = field.get_string_value()
+				print("string value %s" % value)
+			elif field.has_int_value():
+				value = field.get_int_value()
+				print("int value %s" % value)
+			elif field.has_float_value():
+				value = field.get_float_value()
+				print("float value %s" % value)
+			elif field.has_bool_value():
+				value = field.get_bool_value()
+				print("bool value %s" % value)
+			elif field.has_bytes_value():
+				value = field.get_bytes_value()
+				print("bytes value %s" % value)
+			data[field.get_field()] = value
 		_update_device(id, data)
 
 func _process_rec_login(packet: REC.RECMessage) -> void:
@@ -312,9 +351,10 @@ func _check_header_ubc(packet) -> bool:
 		return false
 	return true
 
-func _read_packets_ubc(process_ubc: Callable):
+func _read_packets_ubc(process_ubc: Callable, process_heartbeat: Callable):
 	while ubc_socket.get_available_packet_count() > 0:
-		var packet = UBC.UBCMessage.new()
+		print("reading packet ubc")
+		var packet := UBC.UBCMessage.new()
 		var data := ubc_socket.get_packet()
 		if packet.from_bytes(data) == 0:
 			print(packet.to_string())
@@ -323,11 +363,12 @@ func _read_packets_ubc(process_ubc: Callable):
 				process_ubc.call(packet)
 		else:
 			var heartbeat := UBC.Heartbeat.new()
-			if _check_header_ubc(heartbeat):
-				process_ubc.call(heartbeat)
+			heartbeat.from_bytes(data)
+			print(heartbeat.to_string())
+			process_heartbeat.call(heartbeat)
 		
 
-func _process(delta):
+func _physics_process(_delta):
 	_dprint("")
 	_dprint(current_state)
 	_tick_ubc_unregistered()
@@ -343,7 +384,9 @@ func _process(delta):
 				begin_login.emit()
 		State.LOGIN:
 			_read_packets_rec(_process_rec_login)
-			_read_packets_ubc(_process_ubc_login)
+			_read_packets_ubc(func(): pass, _process_ubc_login)
+		State.CONNECTED:
+			_read_packets_ubc(_process_ubc_connected, _process_ubc_login)
 
 func _ready():
 	connecting.connect(_on_connecting)

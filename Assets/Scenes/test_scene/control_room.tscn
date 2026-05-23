@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://dok8h20vi4url" path="res://Assets/Common/Gauges/Edgewise/edgewise_gauge.tscn" id="5_7joh0"]
 [ext_resource type="PackedScene" uid="uid://cyksa23nxqjwn" path="res://Assets/Common/Switches/Selector Switch/selector_switch.tscn" id="6_ngchh"]
 [ext_resource type="PackedScene" uid="uid://crga4wior2o86" path="res://Assets/Common/Switches/Selector Switch 2/selector_switch_2.tscn" id="7_ca6tt"]
+[ext_resource type="Script" uid="uid://b6l5rxebx21lm" path="res://Assets/Scenes/test_scene/indicator.gd" id="8_qs4c1"]
 [ext_resource type="PackedScene" uid="uid://dp5ytydbdxgoi" path="res://Assets/Common/Annunciators/annunciator_6x3.tscn" id="8_wllca"]
 [ext_resource type="Script" uid="uid://h3tqu2pvq4r5" path="res://Assets/Common/Annunciators/annunciator.gd" id="9_0yiso"]
 [ext_resource type="AudioStream" uid="uid://bfn1cqw1n0oqs" path="res://Assets/Audio/reactor_alarm_loop.mp3" id="10_5wjjd"]
@@ -17,6 +18,18 @@ ambient_light_source = 1
 
 [sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_emsru"]
 data = PackedVector3Array(0, 0, 0, 0, 0, 59.9995, 36, 0, 59.9995, 0, 0, 0, 36, 0, 59.9995, 36, 0, 0, 0, 0, 59.9995, 0, 3.999, 59.9995, 36, 3.999, 59.9995, 0, 0, 59.9995, 36, 3.999, 59.9995, 36, 0, 59.9995, 0, 3.999, 59.9995, 0, 29.9994, 65.3939, 36, 29.9994, 65.3939, 0, 3.999, 59.9995, 36, 29.9994, 65.3939, 36, 3.999, 59.9995, 0, 29.9994, 65.3939, 0, 35.9993, 35.9993, 36, 35.9993, 35.9993, 0, 29.9994, 65.3939, 36, 35.9993, 35.9993, 36, 29.9994, 65.3939, 0, 35.9993, 35.9993, 0, 93.9986, 35.9993, 36, 93.9986, 35.9993, 0, 35.9993, 35.9993, 36, 93.9986, 35.9993, 36, 35.9993, 35.9993, 0, 93.9986, 35.9993, 0, 94, 0, 36, 94, 0, 0, 93.9986, 35.9993, 36, 94, 0, 36, 93.9986, 35.9993, 0, 94, 0, 0, 0, 0, 36, 0, 0, 0, 94, 0, 36, 0, 0, 36, 94, 0, 36, 0, 0, 36, 0, 59.9995, 36, 35.9993, 35.9993, 36, 0, 0, 36, 35.9993, 35.9993, 36, 94, 0, 36, 94, 0, 36, 35.9993, 35.9993, 36, 93.9986, 35.9993, 36, 3.999, 59.9995, 36, 29.9994, 65.3939, 36, 35.9993, 35.9993, 36, 3.999, 59.9995, 36, 35.9993, 35.9993, 36, 0, 59.9995, 0, 94, 0, 0, 93.9986, 35.9993, 0, 35.9993, 35.9993, 0, 94, 0, 0, 35.9993, 35.9993, 0, 0, 0, 0, 0, 0, 0, 35.9993, 35.9993, 0, 0, 59.9995, 0, 3.999, 59.9995, 0, 0, 59.9995, 0, 35.9993, 35.9993, 0, 3.999, 59.9995, 0, 35.9993, 35.9993, 0, 29.9994, 65.3939)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ml6g"]
+metallic = 1.0
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_qs4c1"]
+albedo_color = Color(0, 0.547876, 0.128561, 1)
+emission_enabled = true
+emission = Color(0.26334, 0.95078, 0.19242, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_3psap"]
+albedo_color = Color(0.479588, 0, 0.050164, 1)
+emission = Color(0.882621, 0, 0.0941243, 1)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gninv"]
 albedo_color = Color(0.340339, 0.340339, 0.340339, 1)
@@ -78,7 +91,7 @@ omni_range = 14.003
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.59784, -3.51043)
 
 [node name="test_switch2" parent="." unique_id=830020117 instance=ExtResource("6_ngchh")]
-transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 1.39593, -3.36214)
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 1.4415102, -3.36214)
 
 [node name="selector_switch" parent="test_switch2" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
@@ -92,13 +105,51 @@ material_override = null
 
 [node name="test_switch" parent="." unique_id=1914032633 instance=ExtResource("7_ca6tt")]
 transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 1.33125, -3.36239)
-netname = &"LPCS_Pump"
-switch_positions = {
+netname = &"DG_1"
+switch_positions = Dictionary[int, float]({
 0: -45.0,
 1: 0.0,
 2: 45.0
-}
+})
 rotate_opposite = 0
+light_nodes = Dictionary[String, NodePath]({
+"DG_1_Off": NodePath("green"),
+"DG_1_On": NodePath("red")
+})
+
+[node name="green" type="CSGCylinder3D" parent="test_switch" unique_id=1723523025]
+transform = Transform3D(0.699999, 0, 0, 0, 7.45058e-08, -0.7, 0, 0.7, -2.98023e-08, 0.0219975, 0.0624819, 0.0119364)
+cast_shadow = 0
+radius = 0.017
+height = 0.01
+sides = 10
+material = SubResource("StandardMaterial3D_2ml6g")
+script = ExtResource("8_qs4c1")
+netname = &"DG_1_Off"
+
+[node name="Lamp" type="CSGSphere3D" parent="test_switch/green" unique_id=1313572248]
+transform = Transform3D(1, -1.49012e-08, 0, 0, 1, 0, 0, 0, 1, -1.90735e-06, -0.00902429, 0)
+cast_shadow = 0
+radius = 0.014
+rings = 5
+material = SubResource("StandardMaterial3D_qs4c1")
+
+[node name="red" type="CSGCylinder3D" parent="test_switch" unique_id=1318141257]
+transform = Transform3D(0.699999, 0, 0, 0, 7.45058e-08, -0.7, 0, 0.7, -2.98023e-08, -0.0220022, 0.0624819, 0.0119364)
+cast_shadow = 0
+radius = 0.017
+height = 0.01
+sides = 10
+material = SubResource("StandardMaterial3D_2ml6g")
+script = ExtResource("8_qs4c1")
+netname = &"DG_1_On"
+
+[node name="Lamp" type="CSGSphere3D" parent="test_switch/red" unique_id=1741312368]
+transform = Transform3D(1, -1.49012e-08, 0, 0, 1, 0, 0, -1.49012e-08, 1, -2.86102e-06, -0.00902426, 0)
+cast_shadow = 0
+radius = 0.014
+rings = 5
+material = SubResource("StandardMaterial3D_3psap")
 
 [node name="indicator" type="CSGBox3D" parent="." unique_id=389897262]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.36062, 0.920411, 0)
