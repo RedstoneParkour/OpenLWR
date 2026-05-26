@@ -23,7 +23,7 @@ func add_server(ip: String, server_name: String):
 	pass
 
 func add_server_internal(ip: String, server_name: String):
-	var item = item_scene.instantiate()
+	var item := item_scene.instantiate()
 	item.server_ip = ip
 	item.server_name = server_name
 	item.focus_entered.connect(_on_server_focused.bind(item))
@@ -55,7 +55,7 @@ func _on_ping_fail(server: Control):
 	server_updated.emit(server)
 	pass
 
-func _on_ping_success(server: Control):
+func _on_ping_success(_info, server: Control):
 	server_updated.emit(server)
 	pass
 

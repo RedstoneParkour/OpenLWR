@@ -3,10 +3,10 @@ extends Control
 var selected_server: Control = null
 
 func _update_info():
-	if not _verify_server() or selected_server.response == null:
+	if not _verify_server() or selected_server.response:
 		$VBoxContainer/RichTextLabel.text = "Connection error or no server selected\n<--- Select a server to begin"
 	else:
-		$VBoxContainer/RichTextLabel.text = selected_server.response.get("motd", "no motd")
+		$VBoxContainer/RichTextLabel.text = selected_server.response.get_motd()
 	pass
 
 func _verify_server() -> bool:
@@ -28,5 +28,5 @@ func _on_server_list_server_updated(server):
 func _on_join_pressed():
 	if not _verify_server():
 		return
-	$"../../../../..".connect_server(selected_server.server_ip, selected_server.response["model"])
+	$"../../../../..".connect_server(selected_server.server_ip, selected_server.model)
 	pass # Replace with function body.

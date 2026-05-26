@@ -1,6 +1,7 @@
-[gd_scene load_steps=4 format=3 uid="uid://ckpwvkeql8lki"]
+[gd_scene format=3 uid="uid://ckpwvkeql8lki"]
 
 [ext_resource type="Script" uid="uid://bb3xddmhhjd22" path="res://Assets/Scenes/Lobby/LobbyItem.gd" id="1_vj86x"]
+[ext_resource type="Script" uid="uid://838h0wdrc4bg" path="res://Assets/Main Scripts/net.gd" id="2_dnltc"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_422ta"]
 resource_local_to_scene = true
@@ -21,7 +22,7 @@ corner_radius_bottom_right = 3
 corner_radius_bottom_left = 3
 corner_detail = 5
 
-[node name="PanelContainer" type="PanelContainer"]
+[node name="PanelContainer" type="PanelContainer" unique_id=1145725978]
 custom_minimum_size = Vector2(0, 50)
 offset_left = 10.0
 offset_right = 1910.0
@@ -33,50 +34,55 @@ script = ExtResource("1_vj86x")
 unselected = SubResource("StyleBoxFlat_422ta")
 selected = SubResource("StyleBoxFlat_8khp8")
 
-[node name="LobbyItem" type="VBoxContainer" parent="."]
+[node name="LobbyItem" type="VBoxContainer" parent="." unique_id=456639509]
 layout_mode = 2
 focus_mode = 2
 mouse_filter = 2
 metadata/_edit_use_anchors_ = true
 
-[node name="Line1" type="HBoxContainer" parent="LobbyItem"]
+[node name="Line1" type="HBoxContainer" parent="LobbyItem" unique_id=2063411031]
 layout_mode = 2
 focus_mode = 2
 mouse_filter = 2
 
-[node name="Label" type="Label" parent="LobbyItem/Line1"]
+[node name="Label" type="Label" parent="LobbyItem/Line1" unique_id=1868532873]
 layout_mode = 2
 size_flags_horizontal = 2
 text = "local server"
 
-[node name="Label2" type="Label" parent="LobbyItem/Line1"]
+[node name="Label2" type="Label" parent="LobbyItem/Line1" unique_id=1519903391]
 layout_mode = 2
 size_flags_horizontal = 8
 text = "pinging"
 
-[node name="Line2" type="HBoxContainer" parent="LobbyItem"]
+[node name="Line2" type="HBoxContainer" parent="LobbyItem" unique_id=204148485]
 layout_mode = 2
 size_flags_vertical = 3
 mouse_filter = 2
 
-[node name="Control" type="Control" parent="LobbyItem/Line2"]
+[node name="Control" type="Control" parent="LobbyItem/Line2" unique_id=358246088]
 custom_minimum_size = Vector2(40, 0)
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_filter = 2
 
-[node name="Label3" type="RichTextLabel" parent="LobbyItem/Line2"]
+[node name="Label3" type="RichTextLabel" parent="LobbyItem/Line2" unique_id=278290158]
 layout_mode = 2
 size_flags_horizontal = 3
 mouse_filter = 2
 bbcode_enabled = true
 scroll_active = false
 
-[node name="HTTPRequest" type="HTTPRequest" parent="."]
-timeout = 10.0
+[node name="Timer" type="Timer" parent="." unique_id=737146965]
+one_shot = true
+ignore_time_scale = true
+
+[node name="Network" type="Node" parent="." unique_id=398290048]
+script = ExtResource("2_dnltc")
+metadata/_custom_type_script = "uid://838h0wdrc4bg"
 
 [connection signal="focus_entered" from="." to="." method="_on_focus_entered"]
 [connection signal="focus_exited" from="." to="." method="_on_focus_exited"]
 [connection signal="ping_complete" from="." to="." method="_on_ping_complete"]
 [connection signal="ping_fail" from="." to="." method="_on_ping_fail"]
-[connection signal="request_completed" from="HTTPRequest" to="." method="_on_http_request_completed"]
+[connection signal="timeout" from="Timer" to="." method="_on_timer_timeout"]

@@ -1,4 +1,5 @@
 extends Node
+class_name SNetwork
 
 const REC = preload("res://Assets/Generated/Protocols/rec.gd")
 const UBC = preload("res://Assets/Generated/Protocols/ubc.gd")
@@ -11,6 +12,8 @@ signal connecting()
 signal begin_login()
 signal connected()
 signal disconnected()
+
+signal server_info_received(packet: REC.RECServerInfo)
 
 signal chat_message(message: String)
 signal new_player(name: StringName)
@@ -136,7 +139,7 @@ func _parse_arguments() -> Dictionary:
 	return arguments
 
 var current_state: State = State.READY
-
+var do_login: bool = true
 
 var rec_socket: StreamPeerTCP = StreamPeerTCP.new()
 var rec_session_id: int = 0 # session 0 is invalid
@@ -145,8 +148,9 @@ var ubc_session_id: int = 0
 var uec_socket: PacketPeerUDP = PacketPeerUDP.new()
 var uec_session_id: int = 0
 
-func connect_async(host: String, port := 1312):
-	var err = rec_socket.connect_to_host(host, port+1)
+func connect_async(host: String, port := 1312, login := true):
+	do_login = login
+	var err := rec_socket.connect_to_host(host, port+1)
 	if err != Error.OK:
 		print("shit went wrong! %s" % err)
 		return
@@ -161,8 +165,16 @@ func connect_async(host: String, port := 1312):
 	current_state = State.CONNECTING
 	connecting.emit()
 
-func net_disconnect(reason: String, code: int = 1000) -> void:
+const DEFAULT_REASON := REC.RECSessionClose.Reason.UNKNOWN
+func net_disconnect(reason: String, code := DEFAULT_REASON) -> void:
 	print(code, reason)
+	var disconnect_msg := REC.RECMessage.new()
+	_gen_rec_header(disconnect_msg)
+	disconnect_msg.set_type(REC.RECMessageType.REC_SESSION_CLOSE)
+	var disconnect_data := disconnect_msg.new_session_close()
+	disconnect_data.set_msg(reason)
+	disconnect_data.set_reason(code)
+	rec_socket.put_data(disconnect_data.to_bytes())
 	rec_socket.disconnect_from_host()
 	ubc_socket.close()
 	current_state = State.DISCONNECTING
@@ -176,20 +188,21 @@ func _on_ready():
 	pass
 
 func _on_login():
-	var packet := REC.RECMessage.new()
-	_gen_rec_header(packet)
-	var handshake := packet.new_handshake()
-	packet.set_type(REC.RECMessageType.REC_HANDSHAKE)
-	var capabilities := handshake.new_capabilities()
-	capabilities.clear_supported_features()
-	capabilities.clear_supported_environments()
-	handshake.set_client_major_version(1)
-	handshake.set_client_minor_version(0)
-	handshake.set_verification(0)
-	handshake.set_username(username)
-	
-	print("sending login packet")
-	rec_socket.put_data(packet.to_bytes())
+	if do_login:
+		var packet := REC.RECMessage.new()
+		_gen_rec_header(packet)
+		var handshake := packet.new_handshake()
+		packet.set_type(REC.RECMessageType.REC_HANDSHAKE)
+		var capabilities := handshake.new_capabilities()
+		capabilities.clear_supported_features()
+		capabilities.clear_supported_environments()
+		handshake.set_client_major_version(1)
+		handshake.set_client_minor_version(0)
+		handshake.set_verification(0)
+		handshake.set_username(username)
+		
+		print("sending login packet")
+		rec_socket.put_data(packet.to_bytes())
 	
 	pass
 
@@ -313,8 +326,16 @@ func _process_rec_login(packet: REC.RECMessage) -> void:
 			current_state = State.DISCONNECTING
 			disconnected.emit()
 			print("disconnected by server: %s" % packet.get_session_close().get_msg())
+		REC.RECMessageType.REC_SERVER_INFO:
+			server_info_received.emit(packet.get_server_info())
 		var x:
 			net_disconnect("invalid REC message type for state %s: %s" % [current_state, x])
+	pass
+	
+func _process_rec_connected(packet: REC.RECMessage) -> void:
+	match packet.get_type():
+		REC.RECMessageType.REC_SERVER_INFO:
+			server_info_received.emit(packet.get_server_info())
 	pass
 
 func _process_ubc_login(packet) -> void:
@@ -368,6 +389,14 @@ func _read_packets_ubc(process_ubc: Callable, process_heartbeat: Callable):
 			process_heartbeat.call(heartbeat)
 		
 
+func request_server_info():
+	var packet := REC.RECMessage.new()
+	_gen_rec_header(packet)
+	packet.set_type(REC.RECMessageType.REC_SERVER_INFO_REQUEST)
+	# request intentionally left empty
+	var _request := packet.new_server_info_request()
+	rec_socket.put_data(packet.to_bytes())
+
 var last_net_update := Time.get_ticks_msec() as float / 1000.0
 func _process(_delta: float):
 	# so it turns out the delta can be wrong (it says 0.133 when its actually 1 second)
@@ -396,7 +425,14 @@ func _process(_delta: float):
 			_read_packets_rec(_process_rec_login)
 			_read_packets_ubc(func(): pass, _process_ubc_login)
 		State.CONNECTED:
+			_read_packets_rec(_process_rec_connected)
 			_read_packets_ubc(_process_ubc_connected, _process_ubc_login)
+		State.DISCONNECTING:
+			rec_socket = StreamPeerTCP.new()
+			ubc_socket = PacketPeerUDP.new()
+			uec_socket = PacketPeerUDP.new()
+			current_state = State.READY
+			disconnected.emit()
 
 func _ready():
 	connecting.connect(_on_connecting)
@@ -404,22 +440,16 @@ func _ready():
 	disconnected.connect(_on_ready)
 	connected.connect(_on_connected)
 	_on_ready()
-	var arguments = _parse_arguments()
-	var djoin_ip = "127.0.0.1"
-	if arguments.has("username"):
-		username = arguments.username
-	if arguments.has("join"):
-		if not arguments.join.is_empty():
-			djoin_ip = arguments.join
-		connect_async(djoin_ip)
+	if self == Network:
+		var arguments := _parse_arguments()
+		var djoin_ip := "127.0.0.1"
+		if arguments.has("username"):
+			username = arguments.username
+		if arguments.has("join"):
+			if not arguments.join.is_empty():
+				djoin_ip = arguments.join
+			connect_async(djoin_ip)
 	pass
 
 func _exit_tree() -> void:
-	var disconnect_msg := REC.RECMessage.new()
-	_gen_rec_header(disconnect_msg)
-	disconnect_msg.set_type(REC.RECMessageType.REC_SESSION_CLOSE)
-	var disconnect_data := disconnect_msg.new_session_close()
-	disconnect_data.set_msg("User initiated disconnect")
-	disconnect_data.set_reason(REC.RECSessionClose.Reason.DISCONNECTED)
-	rec_socket.put_data(disconnect_data.to_bytes())
-	rec_socket.disconnect_from_host()
+	net_disconnect("User initiated disconnect", REC.RECSessionClose.Reason.DISCONNECTED)
