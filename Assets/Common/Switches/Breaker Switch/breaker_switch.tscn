@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3 uid="uid://b6voaf3q40kxq"]
+[gd_scene format=3 uid="uid://b6voaf3q40kxq"]
 
 [ext_resource type="PackedScene" uid="uid://dajqyrsq1qo2" path="res://Assets/Common/Switches/Breaker Switch/flagswitch.glb" id="1_jvw7k"]
 [ext_resource type="Script" uid="uid://ojqsgb3wo80x" path="res://Assets/Common/Switches/Selector Switch/selector_switch.gd" id="1_tl2tb"]
@@ -15,65 +15,65 @@ size = Vector3(0.0273438, 0.0568848, 0.0185547)
 [sub_resource type="BoxShape3D" id="BoxShape3D_x10jv"]
 size = Vector3(1.07826, 1.95422, 2.80359)
 
-[node name="Node3D" type="Node3D"]
+[node name="Node3D" type="Node3D" unique_id=1077029827]
 script = ExtResource("1_tl2tb")
 
-[node name="selector_switch" parent="." instance=ExtResource("1_jvw7k")]
+[node name="selector_switch" parent="." unique_id=285565040 instance=ExtResource("1_jvw7k")]
 transform = Transform3D(0.028, 0, 0, 0, -1.22392e-09, 0.028, 0, -0.028, -1.22392e-09, 0, 0, 0)
 
-[node name="Base" parent="selector_switch" index="0"]
+[node name="Base" parent="selector_switch" index="0" unique_id=2136106288]
 cast_shadow = 0
 surface_material_override/0 = ExtResource("2_hk0qg")
 
-[node name="Cube_001" parent="selector_switch/Base" index="0"]
+[node name="Cube_001" parent="selector_switch/Base" index="0" unique_id=1775768426]
 cast_shadow = 0
 surface_material_override/0 = ExtResource("2_hk0qg")
 
-[node name="Cube_006" parent="selector_switch/Base" index="1"]
+[node name="Cube_006" parent="selector_switch/Base" index="1" unique_id=278650278]
 cast_shadow = 0
 surface_material_override/0 = ExtResource("2_hk0qg")
 
-[node name="Sphere_001" parent="selector_switch/Base" index="2"]
+[node name="Sphere_001" parent="selector_switch/Base" index="2" unique_id=112902023]
 cast_shadow = 0
 surface_material_override/0 = ExtResource("2_hk0qg")
 
-[node name="Sphere_002" parent="selector_switch/Base" index="3"]
+[node name="Sphere_002" parent="selector_switch/Base" index="3" unique_id=1771096347]
 cast_shadow = 0
 surface_material_override/0 = ExtResource("2_hk0qg")
 
-[node name="Handle" parent="selector_switch" index="1"]
+[node name="Handle" parent="selector_switch" index="1" unique_id=1607119109]
 cast_shadow = 0
 surface_material_override/0 = ExtResource("3_u0dyy")
 
-[node name="Cube_003" parent="selector_switch/Handle" index="0"]
+[node name="Cube_003" parent="selector_switch/Handle" index="0" unique_id=654788696]
 cast_shadow = 0
 
-[node name="Cylinder_001" parent="selector_switch/Handle" index="1"]
+[node name="Cylinder_001" parent="selector_switch/Handle" index="1" unique_id=381583210]
 cast_shadow = 0
 surface_material_override/0 = ExtResource("3_u0dyy")
 
-[node name="Flag" parent="selector_switch" index="2"]
+[node name="Flag" parent="selector_switch" index="2" unique_id=1166558408]
 cast_shadow = 0
 surface_material_override/0 = ExtResource("4_fc8tq")
 
-[node name="Left" type="StaticBody3D" parent="."]
+[node name="Left" type="StaticBody3D" parent="." unique_id=817487361]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.013, 0, -0.0119624)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Left"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Left" unique_id=1089231983]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.00195313, 0, -2.22045e-16)
 shape = SubResource("BoxShape3D_xugpy")
 
-[node name="Right" type="StaticBody3D" parent="."]
+[node name="Right" type="StaticBody3D" parent="." unique_id=624288022]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.013, 0, -0.0119624)
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Right"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Right" unique_id=401637736]
 shape = SubResource("BoxShape3D_xugpy")
 
-[node name="Move" type="AudioStreamPlayer3D" parent="."]
+[node name="Move" type="AudioStreamPlayer3D" parent="." unique_id=532093068]
 stream = ExtResource("5_bstpb")
 max_distance = 6.0
 
-[node name="PTL" type="Label3D" parent="."]
+[node name="PTL" type="Label3D" parent="." unique_id=352109859]
 transform = Transform3D(-1.32972e-05, 0.0149999, -4.4693e-05, 0.0149897, 1.16357e-05, -0.000554577, -0.00055454, -4.5154e-05, -0.0149897, 0.0152167, 0.000106926, -0.00393649)
 shaded = true
 double_sided = false
@@ -85,7 +85,7 @@ font_size = 50
 outline_size = 0
 line_spacing = -15.0
 
-[node name="Label3D4" type="Label3D" parent="."]
+[node name="Label3D4" type="Label3D" parent="." unique_id=1035810234]
 transform = Transform3D(-0.0149999, -1.32978e-05, -4.4693e-05, -1.16364e-05, 0.0149897, -0.000554577, 4.51541e-05, -0.00055454, -0.0149897, 0, -0.016, -0.004)
 shaded = true
 double_sided = false
@@ -96,14 +96,14 @@ font_size = 50
 outline_size = 0
 line_spacing = -15.0
 
-[node name="Sprite3D" type="Sprite3D" parent="Label3D4"]
+[node name="Sprite3D" type="Sprite3D" parent="Label3D4" unique_id=1238834875]
 transform = Transform3D(0.035, 5.30539e-12, 2.42532e-11, -5.30539e-12, 0.035, -4.85064e-10, -2.42532e-11, 4.85064e-10, 0.035, 0, 0, 0)
 shaded = true
 double_sided = false
 render_priority = 1
 texture = ExtResource("8_eyxga")
 
-[node name="Trip" type="Label3D" parent="."]
+[node name="Trip" type="Label3D" parent="." unique_id=671646536]
 transform = Transform3D(-0.010616, 0.0105971, -4.4693e-05, 0.0105911, 0.0106076, -0.000554577, -0.00036019, -0.000424047, -0.0149897, 0.0137903, 0.0138052, -0.00443904)
 shaded = true
 double_sided = false
@@ -114,7 +114,7 @@ font_size = 50
 outline_size = 0
 line_spacing = -15.0
 
-[node name="Close" type="Label3D" parent="."]
+[node name="Close" type="Label3D" parent="." unique_id=1108806562]
 transform = Transform3D(-0.0105971, -0.010616, -4.4693e-05, -0.0106076, 0.0105911, -0.000554577, 0.000424047, -0.00036019, -0.0149897, -0.013413, 0.0135857, -0.00394346)
 shaded = true
 double_sided = false
@@ -125,23 +125,23 @@ font_size = 50
 outline_size = 0
 line_spacing = -15.0
 
-[node name="VRInteractionZoneL" type="Area3D" parent="."]
+[node name="VRInteractionZoneL" type="Area3D" parent="." unique_id=1726044327]
 transform = Transform3D(0.0252, 1.14679e-15, -2.20305e-09, 9.04728e-29, -0.0252, -1.31178e-08, -2.20305e-09, 1.31178e-08, -0.0252, -4.10558e-10, -0.0016467, 0.00730372)
 input_ray_pickable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="VRInteractionZoneL"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="VRInteractionZoneL" unique_id=38630578]
 transform = Transform3D(0.999997, 3.10193e-25, -7.99599e-19, -9.04729e-26, 0.999997, -1.87583e-12, 7.99599e-19, 1.87583e-12, 0.999997, 0.551053, 0.477111, 0.901794)
 shape = SubResource("BoxShape3D_x10jv")
 
-[node name="VRInteractionZoneR" type="Area3D" parent="."]
+[node name="VRInteractionZoneR" type="Area3D" parent="." unique_id=480829939]
 transform = Transform3D(0.00063504, -2.88992e-17, 3.46945e-18, 2.88992e-17, 0.00063504, 6.61137e-10, -3.46945e-18, -6.61137e-10, 0.00063504, -4.36994e-10, -0.0016052, 0.00711967)
 input_ray_pickable = false
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="VRInteractionZoneR"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="VRInteractionZoneR" unique_id=1743196033]
 transform = Transform3D(39.6824, -1.09504e-17, -3.46914e-06, 1.80585e-12, -39.6824, 2.06567e-05, -3.46914e-06, -2.06567e-05, -39.6824, -20.3014, -18.9983, -35.4957)
 shape = SubResource("BoxShape3D_x10jv")
 
-[node name="Node" type="Node" parent="."]
+[node name="Node" type="Node" parent="." unique_id=1790218920]
 
 [connection signal="input_event" from="Left" to="." method="switch_click_left"]
 [connection signal="input_event" from="Right" to="." method="switch_click_right"]

@@ -6,7 +6,7 @@
 [ext_resource type="ArrayMesh" uid="uid://mh7bhpaspmgv" path="res://Assets/Misc/Models/placeholder_panel.obj" id="4_3dw1b"]
 [ext_resource type="PackedScene" uid="uid://dok8h20vi4url" path="res://Assets/Common/Gauges/Edgewise/edgewise_gauge.tscn" id="5_7joh0"]
 [ext_resource type="PackedScene" uid="uid://cyksa23nxqjwn" path="res://Assets/Common/Switches/Selector Switch/selector_switch.tscn" id="6_ngchh"]
-[ext_resource type="PackedScene" uid="uid://crga4wior2o86" path="res://Assets/Common/Switches/Selector Switch 2/selector_switch_2.tscn" id="7_ca6tt"]
+[ext_resource type="PackedScene" uid="uid://b6voaf3q40kxq" path="res://Assets/Common/Switches/Breaker Switch/breaker_switch.tscn" id="8_3psap"]
 [ext_resource type="Script" uid="uid://b6l5rxebx21lm" path="res://Assets/Scenes/test_scene/indicator.gd" id="8_qs4c1"]
 [ext_resource type="PackedScene" uid="uid://dp5ytydbdxgoi" path="res://Assets/Common/Annunciators/annunciator_6x3.tscn" id="8_wllca"]
 [ext_resource type="Script" uid="uid://h3tqu2pvq4r5" path="res://Assets/Common/Annunciators/annunciator.gd" id="9_0yiso"]
@@ -100,19 +100,10 @@ material_override = null
 transform = Transform3D(1, 0, 0, 0, -3.57628e-07, -1, 0, 1, -3.57628e-07, 0, 0, -4.88111e-05)
 material_override = null
 
-[node name="test_switch" parent="." unique_id=1914032633 instance=ExtResource("7_ca6tt")]
-transform = Transform3D(-1, 0, 8.74228e-08, 0, 1, 0, -8.74228e-08, 0, -1, 0, 1.33125, -3.36239)
-netname = &"DG_1"
-switch_position = 1
-switch_positions = Dictionary[int, float]({
-0: -45.0,
-1: 0.0,
-2: 45.0
-})
-rotate_opposite = 0
+[node name="test_switch4" type="Node3D" parent="." unique_id=249151246]
 
-[node name="green" type="CSGCylinder3D" parent="test_switch" unique_id=1723523025]
-transform = Transform3D(0.699999, 0, 0, 0, 7.45058e-08, -0.7, 0, 0.7, -2.98023e-08, 0.0219975, 0.0624819, 0.0119364)
+[node name="green" type="CSGCylinder3D" parent="test_switch4" unique_id=1723523025]
+transform = Transform3D(-0.699999, 6.1195955e-08, -2.6054003e-15, 0, 7.45058e-08, -0.7, -6.119587e-08, -0.7, 2.98023e-08, -0.021997498, 1.3937318, -3.3743265)
 cast_shadow = 0
 radius = 0.017
 height = 0.01
@@ -121,15 +112,15 @@ material = SubResource("StandardMaterial3D_2ml6g")
 script = ExtResource("8_qs4c1")
 netname = &"DG_1_Off"
 
-[node name="Lamp" type="CSGSphere3D" parent="test_switch/green" unique_id=1313572248]
+[node name="Lamp" type="CSGSphere3D" parent="test_switch4/green" unique_id=1313572248]
 transform = Transform3D(1, -1.49012e-08, 0, 0, 1, 0, 0, 0, 1, -1.90735e-06, -0.00902429, 0)
 cast_shadow = 0
 radius = 0.014
 rings = 5
 material = SubResource("StandardMaterial3D_qs4c1")
 
-[node name="red" type="CSGCylinder3D" parent="test_switch" unique_id=1318141257]
-transform = Transform3D(0.699999, 0, 0, 0, 7.45058e-08, -0.7, 0, 0.7, -2.98023e-08, -0.0220022, 0.0624819, 0.0119364)
+[node name="red" type="CSGCylinder3D" parent="test_switch4" unique_id=1318141257]
+transform = Transform3D(-0.699999, 6.1195955e-08, -2.6054003e-15, 0, 7.45058e-08, -0.7, -6.119587e-08, -0.7, 2.98023e-08, 0.022002202, 1.3937318, -3.3743265)
 cast_shadow = 0
 radius = 0.017
 height = 0.01
@@ -138,12 +129,23 @@ material = SubResource("StandardMaterial3D_2ml6g")
 script = ExtResource("8_qs4c1")
 netname = &"DG_1_On"
 
-[node name="Lamp" type="CSGSphere3D" parent="test_switch/red" unique_id=1741312368]
+[node name="Lamp" type="CSGSphere3D" parent="test_switch4/red" unique_id=1741312368]
 transform = Transform3D(1, -1.49012e-08, 0, 0, 1, 0, 0, -1.49012e-08, 1, -2.86102e-06, -0.00902426, 0)
 cast_shadow = 0
 radius = 0.014
 rings = 5
 material = SubResource("StandardMaterial3D_3psap")
+
+[node name="test_switch3" parent="test_switch4" unique_id=1402245562 instance=ExtResource("8_3psap")]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 1.331, -3.362)
+netname = &"DG_1"
+switch_neutral_position = 1
+switch_positions = Dictionary[int, float]({
+0: 45.0,
+1: 0.0,
+2: -45.0
+})
+switch_momentary = true
 
 [node name="Box1" parent="." unique_id=1833733827 instance=ExtResource("8_wllca")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.797207, 1.96649, -3.38308)
@@ -182,6 +184,4 @@ shape = SubResource("BoxShape3D_giu2e")
 
 [editable path="test_switch2"]
 [editable path="test_switch2/selector_switch"]
-[editable path="test_switch"]
-[editable path="test_switch/selector_switch"]
 [editable path="Box1"]
