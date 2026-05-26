@@ -45,7 +45,7 @@ func _ready():
 	if not err and config.get_value("server_browser","servers") != null:
 		_add_initial_servers()
 	elif config.get_value("server_browser","servers") == null:
-		config.set_value("server_browser","servers",{"Local Server":"127.0.0.1:7001"})
+		config.set_value("server_browser","servers",{"Local Server":"127.0.0.1"})
 		config.save("game.cfg")
 		_add_initial_servers()
 		
