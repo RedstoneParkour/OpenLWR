@@ -38,45 +38,16 @@ var queued_chat_messages: Array[String] = ["test"]
 
 var inbound_packet_queue: Array[Dictionary] = []
 
-# keys are int, values are NodePath
-var devices: Dictionary[int, NodePath] = {}
-
-# keys are int, values are Dictionary
-var device_last_update: Dictionary[int, Dictionary] = {}
-
-# keys are int, values are boolean
-var _client_updated_devices: Dictionary = {}
-
-func name_to_id(netname: StringName) -> int:
-	var h = netname.sha256_buffer()
-	#h = h.slice(0,8)
-	h.reverse() # seems OLWR-server decodes it in the reverse endian lmao
-	return h.decode_u64(0) #this should work (i hope)
+var devices := DeviceRegistry.new(self)
 
 func register_device(id: int, device_path: NodePath) -> void:
-	devices[id] = device_path
-	var last_update = get_device_state(id)
-	get_node(device_path).net_update(last_update)
+	devices.register_device(id, device_path)
 
 func unregister_device(id: int) -> bool:
-	return devices.erase(id)
+	return devices.unregister_device(id)
 
 func get_device_state(id: int) -> Variant:
-	return device_last_update.get(id, null)
-
-func _update_device(id: int, data: Dictionary) -> void:
-	var known: Dictionary = device_last_update.get_or_add(id, {})
-	known.merge(data, true)
-	print(known)
-	print("trying to update %s" % id)
-	if id in devices:
-		get_node(devices[id]).net_update(known)
-
-# net_read should be of the form (PackedByteArray) -> [Variant, PackedByteArray]
-func _read_device_data(id: int, buf: PackedByteArray) -> Array:
-	if id in devices:
-		return get_node(devices[id]).net_read(buf)
-	return [null, buf] # pass it through?
+	return devices.get_device_state(id)
 
 # map from interaction id to device id
 var outbound_interactions: Dictionary[int, int] = {}
@@ -96,34 +67,6 @@ func client_update(id: int, type: int, data: PackedByteArray = PackedByteArray()
 	interaction.set_data(data)
 
 	rec_socket.put_data(packet.to_bytes())
-
-var players: Dictionary = {}
-
-var player_last_update: Dictionary = {}
-
-func register_player(name: StringName, player_path: NodePath) -> void:
-	players[name] = player_path
-	var last_update = get_player_state(name)
-	get_node(player_path).player_update(last_update)
-
-func unregister_player(name: StringName) -> bool:
-	return players.erase(name)
-
-func get_player_state(name: StringName) -> Variant:
-	return player_last_update.get(name)
-
-func _update_player(name: StringName, data) -> void:
-	if name in player_last_update and data != null:
-		get_player_state(name).merge(data, true)
-	else:
-		player_last_update[name] = data
-
-	if name in players:
-		get_node(players[name]).player_update(data)
-	else:
-		# new player!
-		new_player.emit(name)
-	pass
 
 
 func _parse_arguments() -> Dictionary:
@@ -277,27 +220,7 @@ func _process_ubc_connected(packet: UBC.UBCMessage) -> void:
 		var data: Dictionary[int, Variant] = {}
 		for field in device.get_data_fields():
 			var value
-			const DataCase = UBC.UBCMessage.Payload.Data.DataCase
 			print("field %s type %s" % [field.get_field(), field.get_data_case()])
-			#match field.get_data_case():
-				#DataCase.DATA_NOT_SET:
-					#print("!!Data not set")
-					#continue
-				#DataCase.STRING_VALUE:
-					#value = field.get_string_value()
-					#print("string value %s" % value)
-				#DataCase.INT_VALUE:
-					#value = field.get_int_value()
-					#print("int value %s" % value)
-				#DataCase.FLOAT_VALUE:
-					#value = field.get_float_value()
-					#print("float value %s" % value)
-				#DataCase.BOOL_VALUE:
-					#value = field.get_bool_value()
-					#print("bool value %s" % value)
-				#DataCase.BYTES_VALUE:
-					#value = field.get_bytes_value()
-					#print("bytes value %s" % value)
 			if field.has_string_value():
 				value = field.get_string_value()
 				print("string value %s" % value)
@@ -314,7 +237,7 @@ func _process_ubc_connected(packet: UBC.UBCMessage) -> void:
 				value = field.get_bytes_value()
 				print("bytes value %s" % value)
 			data[field.get_field()] = value
-		_update_device(id, data)
+		devices.update_device(id, data)
 
 func _process_rec_login(packet: REC.RECMessage) -> void:
 	match packet.get_type():

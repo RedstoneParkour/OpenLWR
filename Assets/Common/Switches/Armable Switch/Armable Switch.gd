@@ -10,7 +10,7 @@ func _ready():
 	if netname == &"":
 		netname = StringName(name)
 		push_warning("netname property of armable switch is empty, using node name %s" % netname)
-	id = Network.name_to_id(netname)
+	id = DeviceRegistry.name_to_id(netname)
 	Network.register_device(id, get_path())
 	pass
 	

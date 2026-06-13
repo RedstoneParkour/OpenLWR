@@ -9,7 +9,7 @@ func _ready():
 	if netname == &"":
 		netname = StringName(alarm_group)
 		push_warning("netname property of alarm group is empty, using group name %s" % alarm_group)
-	id = Network.name_to_id(netname)
+	id = DeviceRegistry.name_to_id(netname)
 	Network.register_device(id, get_path())
 
 

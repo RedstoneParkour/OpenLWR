@@ -872,5 +872,5 @@ func _ready():
 		if info:
 			scale_min = info["min_value"]
 			scale_max = info["max_value"]
-	id = Network.name_to_id(netname)
+	id = DeviceRegistry.name_to_id(netname)
 	Network.register_device(id, get_path())

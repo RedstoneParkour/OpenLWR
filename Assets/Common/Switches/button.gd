@@ -12,7 +12,7 @@ func _ready():
 	if netname == &"":
 		netname = StringName(name)
 		push_warning("netname property of button is empty, using node name %s" % netname)
-	id = Network.name_to_id(netname)
+	id = DeviceRegistry.name_to_id(netname)
 	Network.register_device(id, get_path())
 	player.unclick_left.connect(un_click)
 
