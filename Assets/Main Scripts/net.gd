@@ -110,7 +110,7 @@ func connect_async(host: String, port := 1312, login := true):
 
 const DEFAULT_REASON := REC.RECSessionClose.Reason.UNKNOWN
 func net_disconnect(reason: String, code := DEFAULT_REASON) -> void:
-	print(code, reason)
+	print("DISCONNECT %s %s" % [code, reason])
 	var disconnect_msg := REC.RECMessage.new()
 	_gen_rec_header(disconnect_msg)
 	disconnect_msg.set_type(REC.RECMessageType.REC_SESSION_CLOSE)
