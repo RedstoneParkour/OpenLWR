@@ -108,9 +108,10 @@ func connect_async(host: String, port := 1312, login := true):
 	current_state = State.CONNECTING
 	connecting.emit()
 
-const DEFAULT_REASON := REC.RECSessionClose.Reason.UNKNOWN
+const RECSesCloseReason := REC.RECSessionClose.Reason
+const DEFAULT_REASON := RECSesCloseReason.UNKNOWN
 func net_disconnect(reason: String, code := DEFAULT_REASON) -> void:
-	print("DISCONNECT %s %s" % [code, reason])
+	print("DISCONNECT: %s %s" % [code, reason])
 	var disconnect_msg := REC.RECMessage.new()
 	_gen_rec_header(disconnect_msg)
 	disconnect_msg.set_type(REC.RECMessageType.REC_SESSION_CLOSE)
@@ -118,6 +119,10 @@ func net_disconnect(reason: String, code := DEFAULT_REASON) -> void:
 	disconnect_data.set_msg(reason)
 	disconnect_data.set_reason(code)
 	rec_socket.put_data(disconnect_data.to_bytes())
+	net_disconnect1(reason)
+
+func net_disconnect1(reason: String) -> void:
+	print("DISCONNECT1: %s" % reason)
 	rec_socket.disconnect_from_host()
 	ubc_socket.close()
 	current_state = State.DISCONNECTING
@@ -238,37 +243,41 @@ func _process_ubc_connected(packet: UBC.UBCMessage) -> void:
 				print("bytes value %s" % value)
 			data[field.get_field()] = value
 		devices.update_device(id, data)
+	print("END UBC UPDATE PACKET")
 
-func _process_rec_login(packet: REC.RECMessage) -> void:
+func _process_rec_login(packet: REC.RECMessage) -> bool:
 	match packet.get_type():
 		REC.RECMessageType.REC_HANDSHAKE_ACK:
 			current_state = State.CONNECTED
 			rec_session_id = packet.get_handshake_ack().get_session_id()
 			connected.emit()
+			return true
 		REC.RECMessageType.REC_SESSION_CLOSE:
-			current_state = State.DISCONNECTING
-			disconnected.emit()
-			print("disconnected by server: %s" % packet.get_session_close().get_msg())
+			net_disconnect1("disconnected by server: %s" % packet.get_session_close().get_msg())
 		REC.RECMessageType.REC_SERVER_INFO:
 			server_info_received.emit(packet.get_server_info())
 		var x:
 			net_disconnect("invalid REC message type for state %s: %s" % [current_state, x])
-	pass
+	return current_state == State.DISCONNECTING
 	
-func _process_rec_connected(packet: REC.RECMessage) -> void:
+func _process_rec_connected(packet: REC.RECMessage) -> bool:
 	match packet.get_type():
 		REC.RECMessageType.REC_SERVER_INFO:
 			server_info_received.emit(packet.get_server_info())
-	pass
+	return current_state == State.DISCONNECTING
 
 func _process_ubc_login(packet) -> void:
 	if packet is UBC.Heartbeat:
 		_process_ubc_unregistered(packet)
 
 func _read_packets_rec(process_rec: Callable):
-	if rec_socket.poll() != Error.OK:
-		current_state = State.DISCONNECTING
-		disconnected.emit()
+	var err := rec_socket.poll()
+	if err != Error.OK:
+		net_disconnect1("Error in polling REC socket: %s" % error_string(err))
+		return
+	var stat := rec_socket.get_status()
+	if stat != StreamPeerSocket.STATUS_CONNECTED:
+		net_disconnect1("REC socket in bad state %s" % stat)
 		return
 	while rec_socket.get_available_bytes() > 0:
 		var packet := REC.RECMessage.new()
@@ -278,22 +287,22 @@ func _read_packets_rec(process_rec: Callable):
 		print(packet.to_string())
 		
 		if not packet.has_header():
-			net_disconnect("no packet header!")
+			net_disconnect("no packet header!", RECSesCloseReason.PROTOCOL_ERROR)
 			return
 		if packet.get_header().get_magic_number() != 0x1312:
-			net_disconnect("invalid packet header")
+			net_disconnect("invalid packet header", RECSesCloseReason.PROTOCOL_ERROR)
 			return
 		
-		process_rec.call(packet)
+		if process_rec.call(packet):
+			return
+		
 
 func _check_header_ubc(packet) -> bool:
 	if not packet.has_header():
-		net_disconnect("no packet header!")
-		return false
+		net_disconnect("no packet header!", RECSesCloseReason.PROTOCOL_ERROR)
 	if packet.get_header().get_magic_number() != 0x1312:
-		net_disconnect("invalid packet header")
-		return false
-	return true
+		net_disconnect("invalid packet header", RECSesCloseReason.PROTOCOL_ERROR)
+	return current_state != State.DISCONNECTING
 
 func _read_packets_ubc(process_ubc: Callable, process_heartbeat: Callable):
 	while ubc_socket.get_available_packet_count() > 0:
@@ -305,6 +314,8 @@ func _read_packets_ubc(process_ubc: Callable, process_heartbeat: Callable):
 			
 			if _check_header_ubc(packet):
 				process_ubc.call(packet)
+			else:
+				return
 		else:
 			var heartbeat := UBC.Heartbeat.new()
 			heartbeat.from_bytes(data)
@@ -336,10 +347,9 @@ func _process(_delta: float):
 	_tick_ubc_unregistered(delta)
 	match current_state:
 		State.CONNECTING:
-			if rec_socket.poll() != Error.OK:
-				print("disconnected!")
-				current_state = State.DISCONNECTING
-				disconnected.emit()
+			var err := rec_socket.poll()
+			if err != Error.OK:
+				net_disconnect1("Error in polling REC socket: %s" % error_string(err))
 			if rec_socket.get_status() == StreamPeerSocket.STATUS_CONNECTED:
 				print("connected!")
 				current_state = State.LOGIN
