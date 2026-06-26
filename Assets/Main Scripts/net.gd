@@ -356,7 +356,7 @@ func _process(_delta: float):
 				begin_login.emit()
 		State.LOGIN:
 			_read_packets_rec(_process_rec_login)
-			_read_packets_ubc(func(): pass, _process_ubc_login)
+			_read_packets_ubc(func(_packet): pass, _process_ubc_login)
 		State.CONNECTED:
 			_read_packets_rec(_process_rec_connected)
 			_read_packets_ubc(_process_ubc_connected, _process_ubc_login)
