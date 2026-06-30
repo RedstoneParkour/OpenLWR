@@ -3,6 +3,7 @@ class_name SNetwork
 
 const REC = preload("res://Assets/Generated/Protocols/rec.gd")
 const UBC = preload("res://Assets/Generated/Protocols/ubc.gd")
+const Common = preload("res://Assets/Generated/Protocols/common.gd")
 
 func _dprint(what):
 	if _ubc_unregistered_time < 0.01:
@@ -307,20 +308,25 @@ func _check_header_ubc(packet) -> bool:
 func _read_packets_ubc(process_ubc: Callable, process_heartbeat: Callable):
 	while ubc_socket.get_available_packet_count() > 0:
 		print("reading packet ubc")
-		var packet := UBC.UBCMessage.new()
+		var pkt := Common.Any.new()
 		var data := ubc_socket.get_packet()
-		if packet.from_bytes(data) == 0:
-			print(packet.to_string())
-			
-			if _check_header_ubc(packet):
-				process_ubc.call(packet)
-			else:
-				return
-		else:
-			var heartbeat := UBC.Heartbeat.new()
-			heartbeat.from_bytes(data)
-			print(heartbeat.to_string())
-			process_heartbeat.call(heartbeat)
+		pkt.from_bytes(data)
+		print(pkt.get_type_url())
+		match pkt.get_type_url():
+			"type.googleapis.com/dose.proto.main.UBCMessage":
+				var packet := UBC.UBCMessage.new()
+				packet.from_bytes(pkt.get_value())
+				print(packet.to_string())
+				
+				if _check_header_ubc(packet):
+					process_ubc.call(packet)
+				else:
+					return
+			"type.googleapis.com/dose.proto.common.Heartbeat":
+				var heartbeat := UBC.Heartbeat.new()
+				heartbeat.from_bytes(pkt.get_value())
+				print(heartbeat.to_string())
+				process_heartbeat.call(heartbeat)
 		
 
 func request_server_info():

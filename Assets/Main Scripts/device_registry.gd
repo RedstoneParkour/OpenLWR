@@ -13,10 +13,15 @@ func _init(rnode: Node):
 	root = rnode
 
 static func name_to_id(netname: StringName) -> int:
+	print(netname)
+	print(netname.to_ascii_buffer())
 	var h = netname.sha256_buffer()
 	#h = h.slice(0,8)
 	h.reverse() # seems OLWR-server decodes it in the reverse endian lmao
-	return h.decode_u64(0) #this should work (i hope)
+	print(h)
+	var id = h.decode_u64(0) #this should work (i hope)
+	print(id)
+	return id
 
 func register_device(id: int, device_path: NodePath) -> void:
 	devices[id] = device_path

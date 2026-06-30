@@ -1,0 +1,121 @@
+syntax = "proto3";
+
+package dose.proto.main;
+import "common.proto";
+
+message RECMessage {
+    Header header = 1;
+
+    RECMessageType type = 2;
+    oneof payload {
+        RECHandshake handshake = 3;
+        RECHandshakeAck handshake_ack = 4;
+        RECServerInfoRequest server_info_request = 5;
+        RECServerInfo server_info = 6;
+        RECRegisterSession register_session = 7;
+        RECSessionClose session_close = 8;
+        RECEvent event = 9;
+        RECInteraction interaction = 10;
+        RECInteractionAck interaction_ack = 11;
+    }
+}
+
+enum RECMessageType {
+    REC_UNKNOWN = 0;
+    REC_HANDSHAKE = 1;
+    REC_HANDSHAKE_ACK = 2;
+    REC_SERVER_INFO_REQUEST = 3;
+    REC_SERVER_INFO = 4;
+    REC_REGISTER_SESSION = 5;
+    REC_SESSION_CLOSE = 6;
+    REC_EVENT = 7;
+    REC_INTERACTION = 8;
+    REC_INTERACTION_ACK = 9;
+}
+
+enum HandshakeVerification {
+    VERIFICATION_NONE = 0;
+    VERIFICATION_BASIC = 1;
+    VERIFICATION_JWT = 2;
+    VERIFICATION_CUSTOM = 3;
+}
+
+message  RECHandshake {
+    message Capabilities {
+        repeated string supported_features = 1;
+        repeated string supported_environments = 2;
+    }
+    
+    Capabilities capabilities = 1;
+    uint32 client_major_version = 2;
+    uint32 client_minor_version = 3;
+    HandshakeVerification verification = 4;
+    string username = 5;
+    bytes verification_data = 6;
+}
+
+message RECHandshakeAck {
+    uint32 session_id = 1;
+    uint32 server_tick = 2;
+    uint32 server_time = 3;
+}
+
+message RECRegisterSession {
+    uint32 ubc_session_id = 1;
+    uint32 uec_session_id = 2;
+}
+
+message RECSessionClose {
+    enum Reason {
+        UNKNOWN = 0;
+        TIMEOUT = 1;
+        VERSION_MISMATCH = 2;
+        VERIFICATION_FAILED = 3;
+        INCOMPATIBLE_FEATURES = 4;
+        PROTOCOL_ERROR = 5;
+        DISCONNECTED = 6;
+        SERVER_SHUTDOWN = 7;
+    }
+    Reason reason = 1;
+    string msg = 2;
+}
+
+message RECEvent {
+    uint32 event_type = 1;
+    uint64 source_device = 2;
+    bytes data = 3;
+}
+
+message RECInteraction {
+    uint32 interaction_id = 1;
+    uint32 interaction_type = 2;
+    uint64 target_device = 3;
+    bytes data = 4;
+}
+
+message RECInteractionAck {
+    uint32 interaction_id = 1;
+    bool success = 2; // 1=accepted 0=rejected
+    bytes result_data = 3; // optional data for the result of the interaction
+}
+
+// This message can be requested without being authenticated
+message RECServerInfoRequest {
+// Intentionally empty
+}
+
+message RECServerInfo {
+    string server_name = 1;
+    string server_version = 2;
+    string motd = 3;
+    uint32 max_sessions = 4;
+    uint32 current_sessions = 5;
+
+    message Capabilities {
+        repeated string required_features = 1;
+        repeated string supported_features = 2;
+        repeated string required_environments = 3;
+        repeated string supported_environments = 4;
+    }
+    Capabilities server_capabilities = 6;
+}

@@ -1236,4 +1236,67 @@ class Heartbeat:
 			return PB_ERR.PARSE_INCOMPLETE
 		return result
 	
+class Any:
+	func _init():
+		var service
+		
+		__type_url = PBField.new("type_url", PB_DATA_TYPE.STRING, PB_RULE.OPTIONAL, 1, true, DEFAULT_VALUES_3[PB_DATA_TYPE.STRING])
+		service = PBServiceField.new()
+		service.field = __type_url
+		data[__type_url.tag] = service
+		
+		__value = PBField.new("value", PB_DATA_TYPE.BYTES, PB_RULE.OPTIONAL, 2, true, DEFAULT_VALUES_3[PB_DATA_TYPE.BYTES])
+		service = PBServiceField.new()
+		service.field = __value
+		data[__value.tag] = service
+		
+	var data = {}
+	
+	var __type_url: PBField
+	func has_type_url() -> bool:
+		if __type_url.value != null:
+			return true
+		return false
+	func get_type_url() -> String:
+		return __type_url.value
+	func clear_type_url() -> void:
+		data[1].state = PB_SERVICE_STATE.UNFILLED
+		__type_url.value = DEFAULT_VALUES_3[PB_DATA_TYPE.STRING]
+	func set_type_url(value : String) -> void:
+		__type_url.value = value
+	
+	var __value: PBField
+	func has_value() -> bool:
+		if __value.value != null:
+			return true
+		return false
+	func get_value() -> PackedByteArray:
+		return __value.value
+	func clear_value() -> void:
+		data[2].state = PB_SERVICE_STATE.UNFILLED
+		__value.value = DEFAULT_VALUES_3[PB_DATA_TYPE.BYTES]
+	func set_value(value : PackedByteArray) -> void:
+		__value.value = value
+	
+	func _to_string() -> String:
+		return PBPacker.message_to_string(data)
+		
+	func to_bytes() -> PackedByteArray:
+		return PBPacker.pack_message(data)
+		
+	func from_bytes(bytes : PackedByteArray, offset : int = 0, limit : int = -1) -> int:
+		var cur_limit = bytes.size()
+		if limit != -1:
+			cur_limit = limit
+		var result = PBPacker.unpack_message(data, bytes, offset, cur_limit)
+		if result == cur_limit:
+			if PBPacker.check_required(data):
+				if limit == -1:
+					return PB_ERR.NO_ERRORS
+			else:
+				return PB_ERR.REQUIRED_FIELDS
+		elif limit == -1 && result > 0:
+			return PB_ERR.PARSE_INCOMPLETE
+		return result
+	
 ################ USER DATA END #################

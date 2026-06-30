@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package dose.proto.common;
+
+message Header {
+    fixed32 magic_number = 1; // 1312 in hexadecimal
+    uint32 protocol_version = 2; // Version 1.0
+    uint32 flags = 3;
+}
+
+message Heartbeat {
+    Header header = 1;
+    uint32 session_id = 2;
+    uint32 tick = 3;
+    uint32 timestamp = 4; // Unix timestamp in milliseconds
+    uint32 response_timestamp = 5; // Unix timestamp in milliseconds
+}
+
+message Any {
+    string type_url = 1;
+    bytes value = 2;
+}

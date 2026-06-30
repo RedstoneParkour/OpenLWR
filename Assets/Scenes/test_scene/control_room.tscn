@@ -93,10 +93,10 @@ transform = Transform3D(1, 0, 0, 0, -4.37114e-08, 1, 0, -1, -4.37114e-08, 0, 1.4
 [node name="selector_switch" parent="test_switch2" index="0"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0)
 
-[node name="Base" parent="test_switch2/selector_switch" index="0" unique_id=414658051]
+[node name="Base" parent="test_switch2/selector_switch" index="0" unique_id=597521168]
 material_override = null
 
-[node name="Handle" parent="test_switch2/selector_switch" index="1" unique_id=1940110001]
+[node name="Handle" parent="test_switch2/selector_switch" index="1" unique_id=166864089]
 transform = Transform3D(1, 0, 0, 0, -3.57628e-07, -1, 0, 1, -3.57628e-07, 0, 0, -4.88111e-05)
 material_override = null
 
